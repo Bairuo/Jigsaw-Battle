@@ -1,0 +1,35 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SubBlock : MonoBehaviour
+{
+    public TargetArea target;
+    
+    void Start()
+    {
+        
+    }
+    
+    public TargetBlock tg = null;
+    
+    void Update()
+    {
+        TargetBlock tb = target.GetNearestBlock(this.gameObject.transform.position);
+        if(tb == tg) // if they are referencing the same object.
+        {
+            // do nothing...
+        }
+        else
+        {
+            // switch linked-sub-block from tg to tb.
+            if(tg) tg.Leave();
+            if(tb) tb.Enter();
+            tg = tb;
+        }
+        
+    }
+    
+    
+    
+}
