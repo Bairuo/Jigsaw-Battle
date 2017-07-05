@@ -17,17 +17,12 @@ public class SubBlock : MonoBehaviour
     void Update()
     {
         TargetBlock tb = target.GetNearestBlock(this.gameObject.transform.position);
-        if(tb == tg) // if they are referencing the same object.
-        {
-            // do nothing...
-        }
-        else
-        {
-            // switch linked-sub-block from tg to tb.
-            if(tg) tg.Leave();
-            if(tb) tb.Enter();
-            tg = tb;
-        }
+        
+        // switch linked-sub-block from tg to tb.
+        if(tg) tg.Leave();
+        if(tb) tb.Enter();
+        tg = tb;
+        
     }
     
     public Vector2 GetDistanceVector()

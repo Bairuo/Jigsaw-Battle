@@ -40,6 +40,11 @@ public class Pattern
         get{ return blocks[Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Length))]; }
     }
     
+    public static Pattern randomTarget
+    {
+        get{ return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Length))]; }
+    }
+    
     /// may cause OutOfRangeException. Let it go along.
     public bool this[int x, int y]
     {
@@ -47,30 +52,62 @@ public class Pattern
         set{ v[x,y] = value; }
     }
     
+// ====================static patterns==================
     
-    static Pattern blocks1 = new Pattern(
+    static Pattern block1 = new Pattern(
         new String[]{
             "#.#",
             "###"
         });
-    static Pattern blocks2 = new Pattern(
+    static Pattern block2 = new Pattern(
         new String[]{
             "#..",
             "###"
         });
-    static Pattern blocks3 = new Pattern(
+    static Pattern block3 = new Pattern(
         new String[]{
             "####"
         });
     
-    /// global patterns
+    static Pattern target1 = new Pattern(
+        new String[]{
+            "#..#",
+            "####",
+            "####",
+            ".##."
+        });
+    static Pattern target2 = new Pattern(
+        new String[]{
+            "#..#",
+            "####",
+            "####",
+            "#.##"
+        });
+    static Pattern target3 = new Pattern(
+        new String[]{
+            ".####",
+            "#.###",
+            "##.##",
+            "###.#",
+            "####.",
+            "#####"
+        });
+    
+    
+// ====================global patterns==================
+    
     public static Pattern[] blocks = {
-        blocks1,
-        blocks2,
-        blocks3
+        block1,
+        block2,
+        block3
         };
 
-
+        
+    public static Pattern[] targets = {
+        target1,
+        target2,
+        target3
+        };
 
 
 
