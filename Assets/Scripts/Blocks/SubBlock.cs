@@ -39,5 +39,4 @@ public class SubBlock : MonoBehaviour
     {
         if(tg) tg.LeaveSettled();
     }
-    
 }

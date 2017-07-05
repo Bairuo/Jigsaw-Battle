@@ -40,7 +40,7 @@ public class TargetArea : MonoBehaviour
                 {
                     GameObject g = Instantiate(gridSource, this.gameObject.transform);
                     g.name = "grid(" + i + "," + j + ")";
-                    g.transform.localPosition = new Vector2(i, -j) + baseloc + halfloc;
+                    g.transform.localPosition = new Vector2(j, -i) + baseloc + halfloc;
                     grids[i,j] = g.GetComponent<TargetBlock>();
                 }
                 else
@@ -75,7 +75,7 @@ public class TargetArea : MonoBehaviour
     public TargetBlock GetNearestBlock(Vector2 loc)
     {
         Point v = GetLoc(loc);
-        if(InRange(v)) return grids[v.x,v.y];
+        if(InRange(v)) return grids[v.y,v.x];
         else return null;
     }
     
