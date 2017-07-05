@@ -6,6 +6,7 @@ public class SubBlock : MonoBehaviour
 {
     public TargetArea target;
     
+    
     void Start()
     {
         
@@ -27,9 +28,21 @@ public class SubBlock : MonoBehaviour
             if(tb) tb.Enter();
             tg = tb;
         }
-        
     }
     
+    public Vector2 GetDistanceVector()
+    {
+        return tg.gameObject.transform.position - this.gameObject.transform.position;
+    }
     
+    public void Settle()
+    {
+        if(tg) tg.TagSettled();
+    }
+    
+    public void UnSettle()
+    {
+        if(tg) tg.LeaveSettled();
+    }
     
 }

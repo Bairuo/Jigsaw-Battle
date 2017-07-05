@@ -6,6 +6,7 @@ public class TargetBlock : MonoBehaviour
 {
     public Color enabledColor;
     public Color disabledColor;
+    public Color establishedColor;
     
     public int count; // how many blocks are taken up this target.
                       // should be always 0 or 1.
@@ -21,7 +22,17 @@ public class TargetBlock : MonoBehaviour
     
     void Update()
     {
-        if(count > 0) rd.color = enabledColor;
+        if(count > 0)
+        {
+            if(established)
+            {
+                rd.color = establishedColor;
+            }
+            else
+            {
+                rd.color = enabledColor;
+            }
+        }
         else rd.color = disabledColor;
     }
     
@@ -33,5 +44,17 @@ public class TargetBlock : MonoBehaviour
     public void Leave()
     {
         count--;
+    }
+    
+    public void TagSettled()
+    {
+        if(count == 0) return;
+        established = true;
+    }
+    
+    public void LeaveSettled()
+    {
+        if(count == 0) return;
+        established = false;
     }
 }

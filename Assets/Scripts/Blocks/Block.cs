@@ -8,8 +8,11 @@ public class Block : MonoBehaviour
     public TargetArea target;
     public GameObject subSource;
     public float settleTime = 1.0f;
-    public float obstacleTime = 1.0f;
+    public float obstacleTime = 3.0f;
     SubBlock[] subs;
+    
+    public Color normalColor;
+    public Color obstacleColor;
     
     // automaton...
     public enum State
@@ -21,14 +24,27 @@ public class Block : MonoBehaviour
         Settling,
         SettleDown
     };
-    public State state;
+    public State state = State.FreeToCatch;
     
     int playerID = -1; // -1 for none. 0 for recently obstacles. ID counts from 1.
     float t = 0.0f; // time count.
     
     
     // settling...
-    Vector2 settleLoc;
+    Vector2 settleFrom;
+    Vector2 settleTo;
+    
+    public bool isSettlable {
+        get
+        {
+            bool able = true;
+            foreach(var i in subs)
+                if(!i.tg) { able = false; break; }
+            return able;
+        }}
+    
+    Vector2 baseloc;
+    public Vector2 settleVec { get { return subs[0].GetDistanceVector(); } }
     
     // debug...
     public bool debugMode = true; //false; // only used in dev.
@@ -36,6 +52,7 @@ public class Block : MonoBehaviour
     bool inControl = false;
     SpriteRenderer bugrd = null;
     
+//=======================================================================================
     
     /// [!]Notice: Assume that all sub-blocks size is 1x1.
     void BuildSubBlocks()
@@ -46,7 +63,7 @@ public class Block : MonoBehaviour
             for(int j=0; j<p.width; j++)
                 if(p[i,j]) count++; 
         subs = new SubBlock[count];
-        Vector2 baseloc = new Vector2(- p.width * 0.5f, - p.height * 0.5f);
+        baseloc = new Vector2(- (p.width - 1) * 0.5f, (p.height - 1) * 0.5f);
         for(int i=0; i<p.height; i++)
             for(int j=0; j<p.width; j++)
                 if(p[i,j])
@@ -54,7 +71,8 @@ public class Block : MonoBehaviour
                     count--;
                     subs[count] = Instantiate(subSource, this.gameObject.transform).GetComponent<SubBlock>();
                     subs[count].gameObject.transform.localPosition = 
-                        Vector2.right * (0.5f + j) + Vector2.up * (0.5f + i) + baseloc;
+                        Vector2.right * j - Vector2.up * i + baseloc;
+                    subs[count].gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                 }
     }
     
@@ -65,34 +83,38 @@ public class Block : MonoBehaviour
             i.target = target;
     }
     
+    
+//=======================================================================================
+    
     void Update()
     {
         if(state == State.Settling)
         {
              t -= Time.deltaTime;
-            /// TODO!!!
-            /// move, and state-changing.
+            float rate = t / settleTime;
+            float inter = rate * rate;
+            this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
+            if(t <= 0f)
+            {
+                t = 0f;
+                this.gameObject.transform.position = settleTo;
+                state = State.SettleDown;
+                //Settle(); // moved from here to Leave().
+            }
         }
         
         if(state == State.Obstacle)
         {
             t -= Time.deltaTime;
-            /// TODO!!!
-            /// state-chaging.
+            if(t <= 0f)
+            {
+                t = 0f;
+                state = State.FreeToCatch;
+                CancelObstacle();
+            }
         }
         
         DebugUpdate();
-    }
-    
-    public bool isSettlable
-    {
-        get
-        {
-            bool able = true;
-            foreach(var i in subs)
-                if(!i.tg) { able = false; break; }
-            return able;
-        }
     }
     
     /// call by player when get out of this block.
@@ -108,6 +130,30 @@ public class Block : MonoBehaviour
         /// Interface required!!!
         /// TODO!!!
     }
+    
+    public void Settle()
+    {
+        foreach(var i in subs) i.Settle();
+    }
+    
+    public void UnSettle()
+    {
+        foreach(var i in subs) i.UnSettle();
+    }
+    
+    public void SetObstacle()
+    {
+        foreach(var i in subs)
+            i.gameObject.GetComponent<SpriteRenderer>().color = obstacleColor;
+    }
+    
+    public void CancelObstacle()
+    {
+        foreach(var i in subs)
+            i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+    }
+    
+//=======================================================================================
     
     void DebugUpdate()
     {
@@ -129,8 +175,6 @@ public class Block : MonoBehaviour
             
             if(Input.GetKeyDown(KeyCode.Mouse0))
             {
-                inControl = true;
-                anchorLoc = (Vector2)this.gameObject.transform.position - worldLoc;
                 DebugEngage();
             }
         }
@@ -170,7 +214,10 @@ public class Block : MonoBehaviour
             // set the settling procedure.
             playerID = 0;
             t = settleTime;
-            
+            state = State.Settling;
+            settleFrom = this.gameObject.transform.position;
+            settleTo = (Vector2)this.gameObject.transform.position + settleVec;
+            Settle();
         }
         else
         {
@@ -178,7 +225,7 @@ public class Block : MonoBehaviour
             playerID = 0;
             t = obstacleTime;
             state = State.Obstacle;
-            
+            SetObstacle();
             /// TODO!!!
             /// Needs something to do with collision box.
             
@@ -187,9 +234,16 @@ public class Block : MonoBehaviour
     
     public void DebugEngage()
     {
-        if(state != State.FreeToCatch || isSettlable) return;
+        if(state != State.FreeToCatch && state != State.SettleDown) return;
+        
+        // DEBUG SECTION...
+        Vector2 worldLoc = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        inControl = true;
+        anchorLoc = (Vector2)this.gameObject.transform.position - worldLoc;
+        // END...
         
         playerID = 1;
         state = State.Catched; // now movement is controlled by user/AI.
+        UnSettle();
     }
 }
