@@ -125,7 +125,7 @@ public class Block : MonoBehaviour
     }
     
     /// call by player when get into this block.
-    public void Engage()
+    public void Engage(Vector2 loc)
     {
         /// Interface required!!!
         /// TODO!!!
