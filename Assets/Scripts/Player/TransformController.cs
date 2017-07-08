@@ -17,19 +17,27 @@ public class TransformController : MonoBehaviour {
         Rigidbody2D rb2 = controller.GetComponent<Rigidbody2D>();
         if (Input.GetKey("up"))
         {
-            rb2.velocity = new Vector2(0, speed);
+            Vector2 velocity = rb2.velocity + new Vector2(0, 1);
+            velocity.Normalize();
+            rb2.velocity = velocity * speed;
         }
         if (Input.GetKey("down"))
         {
-            rb2.velocity = new Vector2(0, -speed);
+            Vector2 velocity = rb2.velocity + new Vector2(0, -1);
+            velocity.Normalize();
+            rb2.velocity = velocity * speed;
         }
         if (Input.GetKey("right"))
         {
-            rb2.velocity = new Vector2(speed, 0);
+            Vector2 velocity = rb2.velocity + new Vector2(1, 0);
+            velocity.Normalize();
+            rb2.velocity = velocity * speed;
         }
         if (Input.GetKey("left"))
         {
-            rb2.velocity = new Vector2(-speed, 0);
+            Vector2 velocity = rb2.velocity + new Vector2(-1, 0);
+            velocity.Normalize();
+            rb2.velocity = velocity * speed;
         }
         if(controller.tag == "Block")
         {
@@ -54,5 +62,4 @@ public class TransformController : MonoBehaviour {
         GameObject obj = GameObject.FindWithTag("Player");
         TransformChanger(obj);
     }
-
 }
