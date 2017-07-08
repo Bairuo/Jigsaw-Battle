@@ -51,7 +51,10 @@ public class Pattern
         get{ return v[x,y]; }
         set{ v[x,y] = value; }
     }
-    
+
+
+
+
 // ====================static patterns==================
     
     static Pattern block1 = new Pattern(
@@ -69,30 +72,6 @@ public class Pattern
             "####"
         });
     
-    static Pattern target1 = new Pattern(
-        new String[]{
-            "#..#",
-            "####",
-            "####",
-            ".##."
-        });
-    static Pattern target2 = new Pattern(
-        new String[]{
-            "#..#",
-            "####",
-            "####",
-            "#.##"
-        });
-    static Pattern target3 = new Pattern(
-        new String[]{
-            ".####",
-            "#.###",
-            "##.##",
-            "###.#",
-            "####.",
-            "#####"
-        });
-    
     
 // ====================global patterns==================
     
@@ -104,9 +83,80 @@ public class Pattern
 
         
     public static Pattern[] targets = {
-        target1,
-        target2,
-        target3
+        new Pattern( new String[] {
+        "######",
+        "######",
+        "######",
+        "######",
+        "######",
+        "######"}), 
+        new Pattern( new String[] {
+        "######",
+        "######",
+        "..##..",
+        "..##..",
+        "######",
+        "######"}), 
+        new Pattern( new String[] {
+        "..##..",
+        "..##..",
+        "######",
+        "######",
+        "..##..",
+        "..##.."}), 
+        new Pattern( new String[] {
+        "####..",
+        "#####.",
+        "######",
+        "######",
+        ".#####",
+        "..####"}), 
+        new Pattern( new String[] {
+        "#....#",
+        "######",
+        "######",
+        "######",
+        "######",
+        "#....#"}), 
+        new Pattern( new String[] {
+        "#.####",
+        "#.####",
+        "######",
+        "######",
+        "####.#",
+        "####.#"}), 
+        new Pattern( new String[] {
+        "..####",
+        "..####",
+        ".#####",
+        ".#..##",
+        ".#..##",
+        "######"}), 
+        new Pattern( new String[] {
+        "####",
+        "####",
+        "####",
+        "####"}), 
+        new Pattern( new String[] {
+        "####",
+        ".###",
+        ".###",
+        "####"}), 
+        new Pattern( new String[] {
+        "####",
+        "####",
+        "#..#",
+        "####"}), 
+        new Pattern( new String[] {
+        ".##.",
+        "####",
+        "####",
+        ".##."}), 
+        new Pattern( new String[] {
+        "####",
+        "####",
+        "##..",
+        "####"})
         };
 
 

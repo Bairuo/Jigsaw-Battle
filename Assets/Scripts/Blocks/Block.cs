@@ -5,7 +5,7 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     // properties...
-    public TargetArea target;
+    public TargetArea target = null;
     public GameObject subSource;
     public float settleTime = 0.5f;
     public float settleDownTime = 0.4f; // You have to wait for this time to pull it out from settled.
@@ -101,7 +101,7 @@ public class Block : MonoBehaviour
             case State.Catching : // [!]Notice: This state cannot be test without player.
             {
                 t -= Time.fixedDeltaTime;
-                // TODO: do some interpolation of magical drawing...
+                // [!]TODO: do some interpolation of magical drawing...
                 if(t < 0f)
                 {
                     t = 0f;
@@ -181,6 +181,8 @@ public class Block : MonoBehaviour
     {
         if(state != State.FreeToCatch && state != State.SettleDown) return;
         
+        /// TODO!!! set the target area.
+        target = null;
         this.playerID = playerID;
         state = State.Catching;
     }
@@ -289,6 +291,8 @@ public class Block : MonoBehaviour
     public void DebugEngage()
     {
         if(state != State.FreeToCatch && state != State.SettleDown) return;
+        target = GameObject.Find("target-area").GetComponent<TargetArea>();
+        foreach(var i in subs) i.target = this.target;
         
         // DEBUG SECTION...
         Vector2 worldLoc = Camera.main.ScreenToWorldPoint(Input.mousePosition);

@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour {
         {
             this.gameObject.GetComponentInChildren<TransformController>().TransformChanger(collision.gameObject);
             Destroy(this.gameObject);
-            collision.gameObject.GetComponent<Block>().Engage(new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.y));
+            collision.gameObject.GetComponent<Block>().Engage(new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), 1);
         }
     }
 }
