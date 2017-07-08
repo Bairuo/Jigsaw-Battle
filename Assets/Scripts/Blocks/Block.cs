@@ -20,10 +20,12 @@ public class Block : MonoBehaviour
     {
         None,
         FreeToCatch,
+        Catching,
         Catched,
         Obstacle,
         Settling,
-        SettleDown
+        SettleDown,
+        
     };
     public State state = State.FreeToCatch;
     
@@ -55,7 +57,7 @@ public class Block : MonoBehaviour
     
 //=======================================================================================
     
-    /// [!]Notice: Assume that all sub-blocks size is 1x1.
+    /// [!]Notice: Assume that all sub-blocks size is 1.0x1.0.
     void BuildSubBlocks()
     {
         int count = 0;
@@ -91,57 +93,96 @@ public class Block : MonoBehaviour
     
 //=======================================================================================
     
-    void Update()
+    /// Changed from UPdate() to FixedUpdate()...
+    void FixedUpdate()
     {
-        if(state == State.Settling)
+        switch(state)
         {
-             t -= Time.deltaTime;
-            if(t > 0f)
+            case State.Catching : // [!]Notice: This state cannot be test without player.
             {
-                float rate = t / settleTime;
-                float inter = rate * rate;
-                this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
-            }
-            else
-            {
-                //t = 0f;
-                this.gameObject.transform.position = settleTo;
-                //state = State.SettleDown;
-                //Settle(); // moved from here to Leave().
-                if(t <= -settleDownTime)
+                t -= Time.fixedDeltaTime;
+                // TODO: do some interpolation of magical drawing...
+                if(t < 0f)
                 {
                     t = 0f;
-                    state = State.SettleDown;
+                    state = State.Catched; // [!]automaton: To cached.
                 }
             }
-        }
-        
-        if(state == State.Obstacle)
-        {
-            t -= Time.deltaTime;
-            if(t <= 0f)
+            break;
+            case State.Settling : 
             {
-                t = 0f;
-                state = State.FreeToCatch;
-                CancelObstacle();
+                t -= Time.fixedDeltaTime;
+                if(t > 0f) // Moving the block to the correct location.
+                {
+                    float rate = t / settleTime;
+                    float inter = rate * rate;
+                    this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
+                }
+                else // Blcok is not placed correctly. Hold on a delay preventing mis-take this block.
+                {
+                    this.gameObject.transform.position = settleTo;
+                    if(t <= -settleDownTime) // Block hold-on duration ended.
+                    {
+                        t = 0f;
+                        state = State.SettleDown; // [!]automaton: To SettleDown.
+                    }
+                }
             }
-        }
+            break;
+            case State.Obstacle :
+            {
+                t -= Time.fixedDeltaTime;
+                if(t <= 0f)
+                {
+                    t = 0f;
+                    CancelObstacle();
+                    state = State.FreeToCatch; // [!]automaton: To FreeToCatch.
+                }
+            }
+            break;
+            default: break;
+        } // swtich.
         
         DebugUpdate();
     }
     
-    /// call by player when get out of this block.
+    /// Called by player when get out of this block.
+    /// This function represents an "input" if the automaton, it can change state safely.
     public void Leave()
     {
-        /// Interface required!!!
-        /// TODO!!!
+        if(state != State.Catched) return;
+        
+        if(isSettlable) 
+        {
+            // set the settling procedure.
+            playerID = 0;
+            t = settleTime;
+            state = State.Settling; // [!]automaton: To settling.
+            settleFrom = this.gameObject.transform.position;
+            settleTo = (Vector2)this.gameObject.transform.position + settleVec;
+            Settle();
+        }
+        else 
+        {
+            // set this an obstacle.
+            playerID = 0;
+            t = obstacleTime;
+            state = State.Obstacle; // [!]automaton: To obstacle.
+            SetObstacle();
+            /// TODO!!!
+            /// Needs something to do with collision box.
+            
+        }
     }
     
-    /// call by player when get into this block.
-    public void Engage(Vector2 loc)
+    /// Called by player when get into this block.
+    /// This function represents an "input" if the automaton, it can change state safely.
+    public void Engage(Vector2 loc, int playerID)
     {
-        /// Interface required!!!
-        /// TODO!!!
+        if(state != State.FreeToCatch && state != State.SettleDown) return;
+        
+        this.playerID = playerID;
+        state = State.Catching;
     }
     
     public void Settle()
