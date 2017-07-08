@@ -7,7 +7,8 @@ public class Block : MonoBehaviour
     // properties...
     public TargetArea target;
     public GameObject subSource;
-    public float settleTime = 1.0f;
+    public float settleTime = 0.5f;
+    public float settleDownTime = 0.4f; // You have to wait for this time to pull it out from settled.
     public float obstacleTime = 3.0f;
     SubBlock[] subs;
     
@@ -73,6 +74,10 @@ public class Block : MonoBehaviour
                     subs[count].gameObject.transform.localPosition = 
                         Vector2.right * j - Vector2.up * i + baseloc;
                     subs[count].gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+                    var box = this.gameObject.AddComponent<BoxCollider2D>();
+                    box.size = new Vector2(0.6f, 0.6f);
+                    box.edgeRadius = 0.17f;
+                    box.offset = subs[count].gameObject.transform.localPosition;
                 }
     }
     
@@ -91,15 +96,23 @@ public class Block : MonoBehaviour
         if(state == State.Settling)
         {
              t -= Time.deltaTime;
-            float rate = t / settleTime;
-            float inter = rate * rate;
-            this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
-            if(t <= 0f)
+            if(t > 0f)
             {
-                t = 0f;
+                float rate = t / settleTime;
+                float inter = rate * rate;
+                this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
+            }
+            else
+            {
+                //t = 0f;
                 this.gameObject.transform.position = settleTo;
-                state = State.SettleDown;
+                //state = State.SettleDown;
                 //Settle(); // moved from here to Leave().
+                if(t <= -settleDownTime)
+                {
+                    t = 0f;
+                    state = State.SettleDown;
+                }
             }
         }
         
