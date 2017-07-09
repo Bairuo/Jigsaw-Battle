@@ -56,7 +56,7 @@ public class BlockGenerator : MonoBehaviour
             
             if(ID != -1)
             {
-                do {
+                do{
                     if(ID < targets.Length)
                     {
                         if(CanGenerate(targets[ID]))
@@ -79,7 +79,7 @@ public class BlockGenerator : MonoBehaviour
             }
             else
             {
-                do {
+                do{
                     Vector2 loc = new Vector2(
                         Mathf.RoundToInt(UnityEngine.Random.Range(-locatingRange.x, locatingRange.x)),
                         Mathf.RoundToInt(UnityEngine.Random.Range(-locatingRange.y, locatingRange.y))
@@ -89,6 +89,7 @@ public class BlockGenerator : MonoBehaviour
                         Generate(loc);
                         generated = true;
                     }
+                    count++;
                 } while(generatingMode == GeneratingMode.GenerateOne && !generated && count < maxAttempt);    
             }
         }
@@ -98,9 +99,9 @@ public class BlockGenerator : MonoBehaviour
     {
         // TODO: Use collider to avoid generating near blocks.
         foreach(var i in GameObject.FindGameObjectsWithTag("Block"))
-            if(Vector2.Distance(loc, i.transform.position) > distance) return false;
+            if(Vector2.Distance(loc, i.transform.position) < distance) return false;
         foreach(var i in GameObject.FindGameObjectsWithTag("Player"))
-            if(Vector2.Distance(loc, i.transform.position) > distance) return false;
+            if(Vector2.Distance(loc, i.transform.position) < distance) return false;
         return true;
     }
     
