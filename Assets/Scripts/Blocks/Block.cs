@@ -1,16 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Block : MonoBehaviour
 {
     // properties...
-    public TargetArea target;
+    public TargetArea target = null;
     public GameObject subSource;
+    public float catchingTime = 2f;
     public float settleTime = 0.5f;
     public float settleDownTime = 0.4f; // You have to wait for this time to pull it out from settled.
     public float obstacleTime = 3.0f;
     SubBlock[] subs;
+    
+    GameObject circle;
+    int height;
+    int width;
     
     public Color normalColor;
     public Color obstacleColor;
@@ -20,16 +26,20 @@ public class Block : MonoBehaviour
     {
         None,
         FreeToCatch,
+        Catching,
         Catched,
         Obstacle,
         Settling,
-        SettleDown
+        SettleDown,
+        
     };
     public State state = State.FreeToCatch;
     
     int playerID = -1; // -1 for none. 0 for recently obstacles. ID counts from 1.
     float t = 0.0f; // time count.
     
+    // catching...
+    float radius;
     
     // settling...
     Vector2 settleFrom;
@@ -47,38 +57,51 @@ public class Block : MonoBehaviour
     Vector2 baseloc;
     public Vector2 settleVec { get { return subs[0].GetDistanceVector(); } }
     
-    // debug...
-    public bool debugMode = true; //false; // only used in dev.
-    Vector2 anchorLoc;
-    bool inControl = false;
-    SpriteRenderer bugrd = null;
-    
 //=======================================================================================
     
-    /// [!]Notice: Assume that all sub-blocks size is 1x1.
+    static int baseCount = 0;
+    /// [!]Notice: Assume that all sub-blocks size is 1.0x1.0.
     void BuildSubBlocks()
     {
         int count = 0;
+        circle = this.gameObject.transform.GetChild(0).gameObject;
         Pattern p = Pattern.randomBlock;
-        for(int i=0; i<p.height; i++)
-            for(int j=0; j<p.width; j++)
+        height = p.height;
+        width = p.width;
+        
+        for(int i=0; i<height; i++)
+            for(int j=0; j<width; j++)
                 if(p[i,j]) count++; 
         subs = new SubBlock[count];
-        baseloc = new Vector2(- (p.width - 1) * 0.5f, (p.height - 1) * 0.5f);
-        for(int i=0; i<p.height; i++)
-            for(int j=0; j<p.width; j++)
+        baseloc = new Vector2(- (width - 1) * 0.5f, (height - 1) * 0.5f);
+        
+        var crd = circle.GetComponent<SpriteRenderer>();
+        int cnt = count; // Temp. count.
+        
+        for(int i=0; i<height; i++)
+            for(int j=0; j<width; j++)
                 if(p[i,j])
                 {
-                    count--;
-                    subs[count] = Instantiate(subSource, this.gameObject.transform).GetComponent<SubBlock>();
-                    subs[count].gameObject.transform.localPosition = 
-                        Vector2.right * j - Vector2.up * i + baseloc;
-                    subs[count].gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+                    cnt--;
+                    subs[cnt] = Instantiate(subSource, this.gameObject.transform).GetComponent<SubBlock>();
+                    subs[cnt].name = "sub(" + i + "," + j + ")";
+                    subs[cnt].gameObject.transform.localPosition =  Vector2.right * j - Vector2.up * i + baseloc;
+                    
                     var box = this.gameObject.AddComponent<BoxCollider2D>();
-                    box.size = new Vector2(0.6f, 0.6f);
-                    box.edgeRadius = 0.17f;
-                    box.offset = subs[count].gameObject.transform.localPosition;
+                    box.size = new Vector2(0.86f, 0.86f);
+                    box.edgeRadius = 0.05f;
+                    box.offset = subs[cnt].gameObject.transform.localPosition;
+                    
+                    var rg = subs[cnt].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+                    var rc = subs[cnt].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
+                    var rd = subs[cnt].gameObject.GetComponent<SpriteRenderer>();
+                    rd.sortingOrder = baseCount + count - 1 - cnt; // draw pictures first.
+                    rd.color = normalColor;
+                    rg.sortingOrder = baseCount + 2 * count - 1 - cnt; // draw stencil.
+                    rc.sortingOrder = baseCount + 3 * count - cnt; // clear stencil after draw the capture circle.
                 }
+        crd.sortingOrder = baseCount + 2 * count;
+        baseCount += 3 * count;
     }
     
     void Start()
@@ -91,57 +114,109 @@ public class Block : MonoBehaviour
     
 //=======================================================================================
     
-    void Update()
+    /// Changed from UPdate() to FixedUpdate()...
+    void FixedUpdate()
     {
-        if(state == State.Settling)
+        switch(state)
         {
-             t -= Time.deltaTime;
-            if(t > 0f)
+            case State.Catching : // [!]Notice: This state cannot be test without player.
             {
-                float rate = t / settleTime;
-                float inter = rate * rate;
-                this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
-            }
-            else
-            {
-                //t = 0f;
-                this.gameObject.transform.position = settleTo;
-                //state = State.SettleDown;
-                //Settle(); // moved from here to Leave().
-                if(t <= -settleDownTime)
+                t -= Time.fixedDeltaTime;
+                float rate = (catchingTime - t) / catchingTime;
+                CircleInterpolate(Mathf.Pow(rate, 0.65f), radius);
+                if(t < 0f)
                 {
                     t = 0f;
-                    state = State.SettleDown;
+                    CircleInterpolate(1.0f, radius);
+                    state = State.Catched; // [!]automaton: To cached.
                 }
             }
-        }
-        
-        if(state == State.Obstacle)
-        {
-            t -= Time.deltaTime;
-            if(t <= 0f)
+            break;
+            case State.Settling : 
             {
-                t = 0f;
-                state = State.FreeToCatch;
-                CancelObstacle();
+                t -= Time.fixedDeltaTime;
+                if(t > 0f) // Moving the block to the correct location.
+                {
+                    float rate = t / settleTime;
+                    float inter = rate * rate;
+                    this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
+                }
+                else // Blcok is not placed correctly. Hold on a delay preventing mis-take this block.
+                {
+                    this.gameObject.transform.position = settleTo;
+                    if(t <= -settleDownTime) // Block hold-on duration ended.
+                    {
+                        t = 0f;
+                        state = State.SettleDown; // [!]automaton: To SettleDown.
+                    }
+                }
             }
-        }
-        
-        DebugUpdate();
+            break;
+            case State.Obstacle :
+            {
+                t -= Time.fixedDeltaTime;
+                float rate = t / obstacleTime;
+                CircleInterpolate(rate * rate, Mathf.Max(width, height) * 0.5f);
+                if(t <= 0f)
+                {
+                    t = 0f;
+                    CircleInterpolate(0f, 1f);
+                    foreach(var i in subs)
+                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+                    state = State.FreeToCatch; // [!]automaton: To FreeToCatch.
+                }
+            }
+            break;
+            default: break;
+        } // swtich.
     }
     
-    /// call by player when get out of this block.
+    /// Called by player when get out of this block.
+    /// This function represents an "input" if the automaton, it can change state safely.
     public void Leave()
     {
-        /// Interface required!!!
-        /// TODO!!!
+        if(state != State.Catched) return;
+        
+        if(isSettlable) 
+        {
+            // set the settling procedure.
+            playerID = 0;
+            t = settleTime;
+            state = State.Settling; // [!]automaton: To settling.
+            settleFrom = this.gameObject.transform.position;
+            settleTo = (Vector2)this.gameObject.transform.position + settleVec;
+            Settle();
+        }
+        else 
+        {
+            // set this an obstacle.
+            playerID = 0;
+            t = obstacleTime;
+            state = State.Obstacle; // [!]automaton: To obstacle.
+            foreach(var i in subs)
+                i.gameObject.GetComponent<SpriteRenderer>().color = obstacleColor;
+            /// TODO!!!
+            /// Needs something to do with collision box.
+        }
+        
+        float mx = Mathf.Max(width, height);
+        circle.transform.localScale = new Vector2(mx, mx) * 0.5f;
+        circle.transform.position = this.gameObject.transform.position;
     }
     
-    /// call by player when get into this block.
-    public void Engage(Vector2 loc)
+    /// Called by player when get into this block.
+    /// This function represents an "input" if the automaton, it can change state safely.
+    public void Engage(Vector2 loc, int playerID)
     {
-        /// Interface required!!!
-        /// TODO!!!
+        if(state != State.FreeToCatch && state != State.SettleDown) return;
+        
+        /// TODO!!! set the target area.
+        target = null;
+        this.playerID = playerID;
+        t = catchingTime;
+        radius = MaxDistance(loc);
+        circle.transform.position = loc;
+        state = State.Catching;
     }
     
     public void Settle()
@@ -154,109 +229,27 @@ public class Block : MonoBehaviour
         foreach(var i in subs) i.UnSettle();
     }
     
-    public void SetObstacle()
+    /// Get the max distance from loc to one of the vertices of this block's surrounding rectangle.
+    public float MaxDistance(Vector2 loc)
     {
-        foreach(var i in subs)
-            i.gameObject.GetComponent<SpriteRenderer>().color = obstacleColor;
+        Vector2 relloc = loc - (Vector2)this.gameObject.transform.position;
+        Vector2 rt = Vector2.right * width * 0.5f;
+        Vector2 up = Vector2.up * height * 0.5f;
+        float mx = (relloc + rt + up).magnitude;
+        mx = Mathf.Max(mx, (relloc + rt - up).magnitude);
+        mx = Mathf.Max(mx, (relloc - rt + up).magnitude);
+        mx = Mathf.Max(mx, (relloc - rt - up).magnitude);
+        Debug.Log(mx);
+        return mx;
     }
     
-    public void CancelObstacle()
+    /// x between 0 to 1. Size as the basic local scale when x == 1.
+    public void CircleInterpolate(float x, float sz)
     {
-        foreach(var i in subs)
-            i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+        circle.transform.localScale = new Vector2(sz * x, sz * x);
     }
+    
     
 //=======================================================================================
-    
-    void DebugUpdate()
-    {
-        if(!debugMode && bugrd) bugrd.enabled = false;
-        
-        if(!debugMode) return;
-        
-        
-        if(!bugrd)
-        {
-            bugrd = this.gameObject.GetComponent<SpriteRenderer>();
-        }
-        
-        Vector2 worldLoc = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        
-        if(Vector2.Distance(this.gameObject.transform.position, worldLoc) <= 1.0f)
-        {
-            bugrd.enabled = true;
-            
-            if(Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                DebugEngage();
-            }
-        }
-        else
-        {
-            bugrd.enabled = false;
-            bugrd.color = Color.white;
-        }
-        
-        if(Input.GetKey(KeyCode.Mouse0))
-        {
-            bugrd.color = Color.red;
-        }
-        else
-        {
-            bugrd.color = Color.white;
-            inControl = false;
-        }
-        
-        if(Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            DebugLeave();
-        }
-        
-        if(inControl)
-        {
-            this.gameObject.transform.position = worldLoc + anchorLoc;
-        }
-    }
-    
-    public void DebugLeave()
-    {
-        if(state != State.Catched) return;
-        
-        if(isSettlable)
-        {
-            // set the settling procedure.
-            playerID = 0;
-            t = settleTime;
-            state = State.Settling;
-            settleFrom = this.gameObject.transform.position;
-            settleTo = (Vector2)this.gameObject.transform.position + settleVec;
-            Settle();
-        }
-        else
-        {
-            // set this an obstacle.
-            playerID = 0;
-            t = obstacleTime;
-            state = State.Obstacle;
-            SetObstacle();
-            /// TODO!!!
-            /// Needs something to do with collision box.
-            
-        }
-    }
-    
-    public void DebugEngage()
-    {
-        if(state != State.FreeToCatch && state != State.SettleDown) return;
-        
-        // DEBUG SECTION...
-        Vector2 worldLoc = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        inControl = true;
-        anchorLoc = (Vector2)this.gameObject.transform.position - worldLoc;
-        // END...
-        
-        playerID = 1;
-        state = State.Catched; // now movement is controlled by user/AI.
-        UnSettle();
-    }
+// Debug section removed.
 }

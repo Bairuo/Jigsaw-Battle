@@ -8,6 +8,8 @@ public class TargetArea : MonoBehaviour
     
     public TargetBlock[,] grids; // true enabled, false disabled.
     
+    public bool fullfilled;
+    
     int height;
     int width;
     
@@ -25,6 +27,8 @@ public class TargetArea : MonoBehaviour
     
     void Start() 
     {
+        fullfilled = false;
+        
         Pattern p = Pattern.randomTarget;
         height = p.height;
         width = p.width;
@@ -40,8 +44,12 @@ public class TargetArea : MonoBehaviour
                 {
                     GameObject g = Instantiate(gridSource, this.gameObject.transform);
                     g.name = "grid(" + i + "," + j + ")";
-                    g.transform.localPosition = new Vector2(j, -i) + baseloc + halfloc;
+                    Vector2 loc = new Vector2(j, -i) + baseloc + halfloc;
+                    loc.x *= this.gameObject.transform.localScale.x;
+                    loc.y *= this.gameObject.transform.localScale.y;
+                    g.transform.position = loc;
                     grids[i,j] = g.GetComponent<TargetBlock>();
+                    g.transform.localScale = this.gameObject.transform.localScale;
                 }
                 else
                 {
@@ -66,6 +74,8 @@ public class TargetArea : MonoBehaviour
     public Point GetLoc(Vector2 loc)
     {
         Vector2 relloc = loc - (Vector2)this.gameObject.transform.position;
+        relloc.x /= this.gameObject.transform.localScale.x;
+        relloc.y /= this.gameObject.transform.localScale.y;
         Vector2 indloc = relloc - baseloc;
         return new Point(Mathf.FloorToInt(indloc.x), Mathf.FloorToInt(-indloc.y));
     }
@@ -81,6 +91,7 @@ public class TargetArea : MonoBehaviour
     
     public void ReportCompleted()
     {
+        fullfilled  = true;
         /// TODO!!!
     }
 }

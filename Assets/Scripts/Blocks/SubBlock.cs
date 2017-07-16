@@ -16,7 +16,8 @@ public class SubBlock : MonoBehaviour
     
     void Update()
     {
-        TargetBlock tb = target.GetNearestBlock(this.gameObject.transform.position);
+        TargetBlock tb = null;
+        if(target) tb = target.GetNearestBlock(this.gameObject.transform.position);
         
         // switch linked-sub-block from tg to tb.
         if(tg) tg.Leave();
