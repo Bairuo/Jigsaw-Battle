@@ -91,6 +91,7 @@ public class Block : MonoBehaviour
                     box.size = new Vector2(0.86f, 0.86f);
                     box.edgeRadius = 0.05f;
                     box.offset = subs[cnt].gameObject.transform.localPosition;
+                    box.isTrigger = true;
                     
                     var rg = subs[cnt].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
                     var rc = subs[cnt].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
@@ -173,9 +174,9 @@ public class Block : MonoBehaviour
     
     /// Called by player when get out of this block.
     /// This function represents an "input" if the automaton, it can change state safely.
-    public void Leave()
+    public bool Leave()
     {
-        if(state != State.Catched) return;
+        if(state != State.Catched) return false;
         
         if(isSettlable) 
         {
@@ -202,21 +203,22 @@ public class Block : MonoBehaviour
         float mx = Mathf.Max(width, height);
         circle.transform.localScale = new Vector2(mx, mx) * 0.5f;
         circle.transform.position = this.gameObject.transform.position;
+        return true;
     }
     
     /// Called by player when get into this block.
     /// This function represents an "input" if the automaton, it can change state safely.
-    public void Engage(Vector2 loc, int playerID)
+    public bool Engage(Vector2 loc, int playerID)
     {
-        if(state != State.FreeToCatch && state != State.SettleDown) return;
+        if(state != State.FreeToCatch && state != State.SettleDown) return false;
         
-        /// TODO!!! set the target area.
         target = null;
         this.playerID = playerID;
         t = catchingTime;
         radius = MaxDistance(loc);
         circle.transform.position = loc;
         state = State.Catching;
+        return true;
     }
     
     public void Settle()
