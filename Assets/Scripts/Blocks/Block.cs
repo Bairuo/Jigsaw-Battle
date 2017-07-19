@@ -153,11 +153,25 @@ public class Block : MonoBehaviour
                 }
             }
             break;
+            case State.SettleDown : // No state transform by itself.
+            {
+                t -= Time.fixedDeltaTime;
+                float rate = t / obstacleTime;
+                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                if(t <= 0f)
+                {
+                    t = 0f;
+                    CircleInterpolate(0f, 1f);
+                    foreach(var i in subs)
+                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+                }
+            }
+            break;
             case State.Obstacle :
             {
                 t -= Time.fixedDeltaTime;
                 float rate = t / obstacleTime;
-                CircleInterpolate(rate * rate, Mathf.Max(width, height) * 0.5f);
+                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
                 if(t <= 0f)
                 {
                     t = 0f;
@@ -241,13 +255,13 @@ public class Block : MonoBehaviour
         mx = Mathf.Max(mx, (relloc + rt - up).magnitude);
         mx = Mathf.Max(mx, (relloc - rt + up).magnitude);
         mx = Mathf.Max(mx, (relloc - rt - up).magnitude);
-        Debug.Log(mx);
         return mx;
     }
     
     /// x between 0 to 1. Size as the basic local scale when x == 1.
     public void CircleInterpolate(float x, float sz)
     {
+        x = Mathf.Clamp(x, 0.0f, 1.0f);
         circle.transform.localScale = new Vector2(sz * x, sz * x);
     }
     

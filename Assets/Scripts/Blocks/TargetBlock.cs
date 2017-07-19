@@ -48,13 +48,13 @@ public class TargetBlock : MonoBehaviour
     
     public void TagSettled()
     {
-        if(count == 0) return;
+        //if(count == 0) return;
         established = true;
     }
     
     public void LeaveSettled()
     {
-        if(count == 0) return;
+        //if(count == 0) return;
         established = false;
     }
 }
