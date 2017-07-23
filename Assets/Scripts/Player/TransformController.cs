@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class TransformController : MonoBehaviour {
     GameObject controller;
-    public GameObject player;
     public float speed = 0.5f;
-    public float redius = 2f; //重新出现区域的半径
+    public float redius = 5f; //重新出现区域的半径
     struct Position
     {
         public float x;
@@ -18,43 +17,48 @@ public class TransformController : MonoBehaviour {
             y = _y / root;
         }
     }
+    [SerializeField] private JoyStick joystick;
+
 	// Use this for initialization
 	void Start () {
         controller = this.gameObject.transform.parent.gameObject;
+        joystick = GameObject.Find("JoyStick").GetComponent<JoyStick>();
     }
 
     // Update is called once per frame
     void Update() {
         Rigidbody2D rb2 = controller.GetComponent<Rigidbody2D>();
-        if (Input.GetKey("up"))
-        {
-            Vector2 velocity = rb2.velocity + new Vector2(0, 1);
-            velocity.Normalize();
-            rb2.velocity = velocity * speed;
-        }
-        if (Input.GetKey("down"))
-        {
-            Vector2 velocity = rb2.velocity + new Vector2(0, -1);
-            velocity.Normalize();
-            rb2.velocity = velocity * speed;
-        }
-        if (Input.GetKey("right"))
-        {
-            Vector2 velocity = rb2.velocity + new Vector2(1, 0);
-            velocity.Normalize();
-            rb2.velocity = velocity * speed;
-        }
-        if (Input.GetKey("left"))
-        {
-            Vector2 velocity = rb2.velocity + new Vector2(-1, 0);
-            velocity.Normalize();
-            rb2.velocity = velocity * speed;
-        }
+        //if (Input.GetKey("up"))
+        //{
+        //    Vector2 velocity = rb2.velocity + new Vector2(0, 1);
+        //    velocity.Normalize();
+        //    rb2.velocity = velocity * speed;
+        //}
+        //if (Input.GetKey("down"))
+        //{
+        //    Vector2 velocity = rb2.velocity + new Vector2(0, -1);
+        //    velocity.Normalize();
+        //    rb2.velocity = velocity * speed;
+        //}
+        //if (Input.GetKey("right"))
+        //{
+        //    Vector2 velocity = rb2.velocity + new Vector2(1, 0);
+        //    velocity.Normalize();
+        //    rb2.velocity = velocity * speed;
+        //}
+        //if (Input.GetKey("left"))
+        //{
+        //    Vector2 velocity = rb2.velocity + new Vector2(-1, 0);
+        //    velocity.Normalize();
+        //    rb2.velocity = velocity * speed;
+        //}
+        Vector2 vec = joystick.rectT_Joy.anchoredPosition / 10;
+        rb2.velocity = vec;
         if(controller.tag == "Block")
         {
             if(Input.GetKey("e"))
             {
-                controller.gameObject.GetComponent<Block>().Leave();
+                //controller.gameObject.GetComponent<Block>().Leave();
                 PlayerCreater();
                 rb2.velocity = new Vector2(0, 0);
             }
@@ -96,7 +100,19 @@ public class TransformController : MonoBehaviour {
     public void PlayerCreater()
     {
         Position pos = PositionFinder();
-        GameObject obj = Object.Instantiate(player, controller.gameObject.transform.position + new Vector3(pos.x * redius,pos.y * redius), controller.transform.rotation);
-        TransformChanger(obj);
+        Transform parent = GameObject.Find("ObjectController").gameObject.transform;
+        foreach(Transform child in parent)
+        {   
+            if(child.gameObject.tag == "Player")
+            {
+                Vector2 _pos = controller.transform.position;
+                TransformChanger(child.gameObject);
+                child.SetParent(GameObject.Find("_ObjectController").gameObject.transform);
+                child.position = new Vector3(pos.x * redius + _pos.x, pos.y * redius + _pos.y, 0);
+                child.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                child.gameObject.SetActive(true);
+                break;
+            }
+        }
     }
 }
