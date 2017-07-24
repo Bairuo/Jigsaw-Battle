@@ -233,7 +233,7 @@ public class Block : MonoBehaviour
         t = catchingTime;
         radius = MaxDistance(loc);
         circle.transform.position = loc;
-        if(state == State.Settled)
+        if(state == State.SettleDown)
             UnSettle();
         state = State.Catching;
         return true;
