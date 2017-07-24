@@ -45,14 +45,16 @@ public class Block : MonoBehaviour
     Vector2 settleFrom;
     Vector2 settleTo;
     
-    public bool isSettlable {
+    public bool isSettlable
+    {
         get
         {
             bool able = true;
             foreach(var i in subs)
                 if(!i.tg) { able = false; break; }
             return able;
-        }}
+        }
+    }
     
     Vector2 baseloc;
     public Vector2 settleVec { get { return subs[0].GetDistanceVector(); } }
@@ -231,6 +233,8 @@ public class Block : MonoBehaviour
         t = catchingTime;
         radius = MaxDistance(loc);
         circle.transform.position = loc;
+        if(state == State.Settled)
+            UnSettle();
         state = State.Catching;
         return true;
     }
