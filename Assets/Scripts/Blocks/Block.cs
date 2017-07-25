@@ -73,16 +73,14 @@ public class Block : MonoBehaviour
         
         for(int i=0; i<height; i++)
             for(int j=0; j<width; j++)
-                if(p[i,j]) count++; 
+                if(p[i,j] != 0) count++; 
         subs = new SubBlock[count];
         baseloc = new Vector2(- (width - 1) * 0.5f, (height - 1) * 0.5f);
-        
-        var crd = circle.GetComponent<SpriteRenderer>();
         int cnt = count; // Temp. count.
         
         for(int i=0; i<height; i++)
             for(int j=0; j<width; j++)
-                if(p[i,j])
+                if(p[i,j] != 0)
                 {
                     cnt--;
                     subs[cnt] = Instantiate(subSource, this.gameObject.transform).GetComponent<SubBlock>();
@@ -103,6 +101,8 @@ public class Block : MonoBehaviour
                     rg.sortingOrder = baseCount + 2 * count - 1 - cnt; // draw stencil.
                     rc.sortingOrder = baseCount + 3 * count - cnt; // clear stencil after draw the capture circle.
                 }
+        
+        var crd = circle.GetComponent<SpriteRenderer>();
         crd.sortingOrder = baseCount + 2 * count;
         baseCount += 3 * count;
     }
@@ -138,18 +138,23 @@ public class Block : MonoBehaviour
             case State.Settling : 
             {
                 t -= Time.fixedDeltaTime;
+                float rate = (t + settleDownTime) / (settleTime + settleDownTime);
+                Debug.Log(rate);
+                CircleInterpolate(rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                
                 if(t > 0f) // Moving the block to the correct location.
                 {
-                    float rate = t / settleTime;
-                    float inter = rate * rate;
+                    float settleRate = t / settleTime;
+                    float inter = settleRate * settleRate;
                     this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
                 }
-                else // Blcok is not placed correctly. Hold on a delay preventing mis-take this block.
+                else // Blcok is now placed correctly. Hold on a delay preventing mis-take this block.
                 {
                     this.gameObject.transform.position = settleTo;
                     if(t <= -settleDownTime) // Block hold-on duration ended.
                     {
                         t = 0f;
+                        CircleInterpolate(rate * rate, 9f);
                         state = State.SettleDown; // [!]automaton: To SettleDown.
                     }
                 }
@@ -163,7 +168,7 @@ public class Block : MonoBehaviour
                 if(t <= 0f)
                 {
                     t = 0f;
-                    CircleInterpolate(0f, 1f);
+                    CircleInterpolate(0f, 9f);
                     foreach(var i in subs)
                         i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                 }
@@ -177,7 +182,7 @@ public class Block : MonoBehaviour
                 if(t <= 0f)
                 {
                     t = 0f;
-                    CircleInterpolate(0f, 1f);
+                    CircleInterpolate(0f, 9f);
                     foreach(var i in subs)
                         i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                     state = State.FreeToCatch; // [!]automaton: To FreeToCatch.
@@ -236,6 +241,10 @@ public class Block : MonoBehaviour
         if(state == State.SettleDown)
             UnSettle();
         state = State.Catching;
+        
+        var crd = circle.GetComponent<SpriteRenderer>();
+        crd.color = Camp.GetColor(playerID);
+        
         return true;
     }
     

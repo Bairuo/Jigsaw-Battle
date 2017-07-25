@@ -13,25 +13,28 @@ public class Pattern
 {
     public int height;
     public int width;
-    bool[,] v; 
+    
+    /// use int for multiple bounty supporting.
+    int[,] v; 
     Pattern(int w, int h)
     {
         width = w;
         height = h;
-        v = new bool[h,w];
+        v = new int[h,w];
     }
     
     Pattern(String[] s)
     {
         height = s.Length;
         width = s[0].Length;
-        v = new bool[height,width];
+        v = new int[height,width];
         
         for(int i=0; i<height; i++)
         {
             for(int j=0; j<width; j++)
             {
-                v[i,j] = (s[i][j] == '0' || s[i][j] == ' ' || s[i][j] == '.' ? false : true);
+                v[i,j] = (s[i][j] == '0' || s[i][j] == ' ' || s[i][j] == '.' ? 0 : 1);
+                if(s[i][j] == '$') v[i,j]++;
             }
         }
     }
@@ -100,7 +103,7 @@ public class Pattern
     }
     
     /// may cause OutOfRangeException. Let it go along.
-    public bool this[int x, int y]
+    public int this[int x, int y]
     {
         get{ return v[x,y]; }
         set{ v[x,y] = value; }

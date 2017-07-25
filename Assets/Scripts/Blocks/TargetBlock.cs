@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TargetBlock : MonoBehaviour
 {
+    public int playerID;
     public Color enabledColor;
     public Color disabledColor;
     public Color establishedColor;
@@ -26,14 +27,16 @@ public class TargetBlock : MonoBehaviour
         {
             if(established)
             {
-                rd.color = establishedColor;
+                Color c = establishedColor * Camp.GetColor(playerID);
+                c.a = 1.0f - (1.0f - c.a) * 0.7f;
+                rd.color = c;
             }
             else
             {
-                rd.color = enabledColor;
+                rd.color = enabledColor * Camp.GetColor(playerID);
             }
         }
-        else rd.color = disabledColor;
+        else rd.color = disabledColor * Camp.GetColor(playerID);
     }
     
     public void Enter()
