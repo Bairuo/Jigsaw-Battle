@@ -27,6 +27,8 @@ public class TargetArea : MonoBehaviour
     
     void Start() 
     {
+        Camp.SetTargetArea(this, playerID);
+        
         fullfilled = false;
         
         Pattern p = Pattern.randomTarget;
@@ -47,7 +49,7 @@ public class TargetArea : MonoBehaviour
                     Vector2 loc = new Vector2(j, -i) + baseloc + halfloc;
                     loc.x *= this.gameObject.transform.localScale.x;
                     loc.y *= this.gameObject.transform.localScale.y;
-                    g.transform.position = loc;
+                    g.transform.localPosition = loc;
                     grids[i,j] = g.GetComponent<TargetBlock>();
                     g.transform.localScale = this.gameObject.transform.localScale;
                     grids[i,j].playerID = playerID;

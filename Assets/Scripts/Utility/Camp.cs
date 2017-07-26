@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Camp
 {
-	static public Color[] campColor = new Color[]{Util.StringToColor("#DFE3CB"), Util.StringToColor("#69D1E7")};
+	/// original color: RGB:DFE3CB
+	static public Color[] campColor = new Color[]{Util.StringToColor("#F96900"), Util.StringToColor("#69D1E7")};
+	static public TargetArea[] campTarget = new TargetArea[2];
 	
 	static public int GetCamp(int playerID)
 	{
@@ -13,6 +15,17 @@ public class Camp
 	
 	static public Color GetColor(int playerID)
 	{
-		return campColor[GetCamp(playerID) < 0 ? 0 : 1];
+		return campColor[playerID < 0 ? 0 : 1];
+	}
+	
+	static public TargetArea GetTarget(int playerID)
+	{
+		return campTarget[playerID < 0 ? 0 : 1];
+	}
+	
+	static public void SetTargetArea(TargetArea target, int playerID)
+	{
+		if(playerID < 0) campTarget[0] = target;
+		else campTarget[1] = target;
 	}
 }

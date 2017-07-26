@@ -35,7 +35,7 @@ public class Block : MonoBehaviour
     };
     public State state = State.FreeToCatch;
     
-    int playerID = -1; // -1 for none. 0 for recently obstacles. ID counts from 1.
+    int playerID = 1; // -1 for none. 0 for recently obstacles. ID counts from 1.
     float t = 0.0f; // time count.
     
     // catching...
@@ -110,8 +110,6 @@ public class Block : MonoBehaviour
     void Start()
     {
         BuildSubBlocks();
-        foreach(var i in subs)
-            i.target = target;
     }
     
     
@@ -139,7 +137,6 @@ public class Block : MonoBehaviour
             {
                 t -= Time.fixedDeltaTime;
                 float rate = (t + settleDownTime) / (settleTime + settleDownTime);
-                Debug.Log(rate);
                 CircleInterpolate(rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
                 
                 if(t > 0f) // Moving the block to the correct location.
@@ -244,6 +241,9 @@ public class Block : MonoBehaviour
         
         var crd = circle.GetComponent<SpriteRenderer>();
         crd.color = Camp.GetColor(playerID);
+        target = Camp.GetTarget(playerID);
+        foreach(var i in subs)
+            i.target = target;
         
         return true;
     }
