@@ -18,8 +18,7 @@
 		
 		Pass
 		{
-			//Blend Off
-			Blend SrcAlpha OneMinusSrcAlpha
+			Blend DstColor Zero
 			BlendOp Add
 		
 			CGPROGRAM
@@ -32,14 +31,14 @@
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
-				float4 color : COLOR;
+				float4 color : COLOR0;
 			};
 
 			struct v2f
 			{
 				float2 uv : TEXCOORD0;
 				float4 vertex : SV_POSITION;
-				float4 color : COLOR;
+				float4 color : COLOR0;
 			};
 
 			v2f vert (appdata v)

@@ -58,9 +58,11 @@ public class TransformController : MonoBehaviour {
         {
             if(Input.GetKey("e"))
             {
-                //controller.gameObject.GetComponent<Block>().Leave();
-                PlayerCreater();
-                rb2.velocity = new Vector2(0, 0);
+                if(controller.gameObject.GetComponent<Block>().Leave())
+                {
+                    PlayerCreater();
+                    rb2.velocity = new Vector2(0, 0);
+                }
             }
         }
     }

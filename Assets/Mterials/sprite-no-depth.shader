@@ -16,7 +16,6 @@
 		
 		Pass
 		{
-			//Blend Off
 			Blend SrcAlpha OneMinusSrcAlpha
 			BlendOp Add
 		
