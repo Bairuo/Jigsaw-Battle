@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TargetArea : MonoBehaviour
 {
     public GameObject gridSource;
     public int playerID; // or campID as -1 or 1.
     public TargetBlock[,] grids; // true enabled, false disabled.
-    
+    public TargetArea opposite;
+    public Pattern p;
+    public Slider slider;
+    public Text rateDisplay;
     public bool fullfilled;
     
     int height;
@@ -24,14 +28,15 @@ public class TargetArea : MonoBehaviour
             return true;
         }}
     
-    
     void Start() 
     {
         Camp.SetTargetArea(this, playerID);
         
         fullfilled = false;
         
-        Pattern p = Pattern.randomTarget;
+        if(p == null)
+            opposite.p = this.p = Pattern.randomTarget;
+        
         height = p.height;
         width = p.width;
         
@@ -62,6 +67,17 @@ public class TargetArea : MonoBehaviour
     
     void Update()
     {
+        int cnt = 0;
+        int crr = 0;
+        for(int i=0; i<height; i++)
+            for(int j=0; j<width; j++)
+                if(grids[i,j])
+                {
+                    crr++;
+                    if(grids[i,j].established)
+                        cnt++;
+                }
+        rateDisplay.text = (100 * (slider.value = (float)cnt / crr)).ToString("00.") + "%";
     }
     
     public struct Point
