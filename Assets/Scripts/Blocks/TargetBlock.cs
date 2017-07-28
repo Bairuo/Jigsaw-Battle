@@ -16,7 +16,7 @@ public class TargetBlock : MonoBehaviour
     
     public bool established; // whether this object is taken-up and settled down.
     
-    SpriteRenderer rd;
+    public SpriteRenderer rd;
     
     void Start()
     {

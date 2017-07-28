@@ -14,8 +14,8 @@ public class TargetArea : MonoBehaviour
     public Text rateDisplay;
     public bool fullfilled;
     
-    int height;
-    int width;
+    public int height;
+    public int width;
     
     Vector2 baseloc;
     Vector2 halfloc;
@@ -32,7 +32,7 @@ public class TargetArea : MonoBehaviour
         {
             for(int i=0; i<height; i++)
                 for(int j=0; j<width; j++)
-                    if(grids[i,j].isBonus && !grids[i,j].established)
+                    if(grids[i,j] && grids[i,j].isBonus && !grids[i,j].established)
                         return false;
             return true;
         }
