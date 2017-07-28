@@ -28,6 +28,16 @@ public class TargetArea : MonoBehaviour
             return true;
         }}
     
+    public bool bonusCompleted { get
+        {
+            for(int i=0; i<height; i++)
+                for(int j=0; j<width; j++)
+                    if(grids[i,j].isBonus && !grids[i,j].established)
+                        return false;
+            return true;
+        }
+    }
+    
     void Start() 
     {
         Camp.SetTargetArea(this, playerID);
@@ -58,6 +68,8 @@ public class TargetArea : MonoBehaviour
                     grids[i,j] = g.GetComponent<TargetBlock>();
                     g.transform.localScale = this.gameObject.transform.localScale;
                     grids[i,j].playerID = playerID;
+                    if(p[i,j] > 1)
+                        grids[i,j].isBonus = true;
                 }
                 else
                 {
@@ -78,6 +90,9 @@ public class TargetArea : MonoBehaviour
                         cnt++;
                 }
         rateDisplay.text = (100 * (slider.value = (float)cnt / crr)).ToString("00.") + "%";
+        
+        if(bonusCompleted)
+            SetBonus();
     }
     
     public struct Point
@@ -112,5 +127,12 @@ public class TargetArea : MonoBehaviour
     {
         fullfilled  = true;
         /// TODO!!!
+    }
+    
+    bool bonusGiven = true;
+    public void SetBonus()
+    {
+        if(bonusGiven) return;
+        // TODO!!!
     }
 }

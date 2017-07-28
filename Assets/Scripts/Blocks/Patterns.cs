@@ -34,7 +34,7 @@ public class Pattern
             for(int j=0; j<width; j++)
             {
                 v[i,j] = (s[i][j] == '0' || s[i][j] == ' ' || s[i][j] == '.' ? 0 : 1);
-                if(s[i][j] == '$') v[i,j]++;
+                if(s[i][j] == '$') v[i,j]++; // v[i,j] > 1.
             }
         }
     }
