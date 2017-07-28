@@ -17,12 +17,14 @@ public class TransformController : MonoBehaviour {
             y = _y / root;
         }
     }
+    private Vector3 _localScale;
     [SerializeField] private JoyStick joystick;
 
 	// Use this for initialization
 	void Start () {
         controller = this.gameObject.transform.parent.gameObject;
         joystick = GameObject.Find("JoyStick").GetComponent<JoyStick>();
+        _localScale = controller.gameObject.transform.localScale;
     }
 
     // Update is called once per frame
@@ -111,7 +113,7 @@ public class TransformController : MonoBehaviour {
                 TransformChanger(child.gameObject);
                 child.SetParent(GameObject.Find("_ObjectController").gameObject.transform);
                 child.position = new Vector3(pos.x * redius + _pos.x, pos.y * redius + _pos.y, 0);
-                child.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                child.localScale = _localScale;
                 child.gameObject.SetActive(true);
                 break;
             }
