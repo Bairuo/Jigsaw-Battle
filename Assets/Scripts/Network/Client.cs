@@ -286,6 +286,15 @@ public class Client
         Send(protocol);
     }
 
+    public void SendAreaInit(string tag, int patternID)
+    {
+        ProtocolBytes protocol = new ProtocolBytes();
+        protocol.AddString("AreaInit");
+        protocol.AddString(tag);
+        protocol.AddInt(patternID);
+
+        Send(protocol);
+    }
 
     public void SendHit(string id, int isPlayer, int damage)
     {

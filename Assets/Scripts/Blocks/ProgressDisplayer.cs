@@ -26,6 +26,7 @@ public class ProgressDisplayer : MonoBehaviour
             {
                 target = Camp.GetTarget(playerID);
                 subs = new Image[target.width, target.height];
+                //Debug.Log(target.width +" "+ target.height);
                 Vector2 cur = new Vector2(0.0f, 0.0f);
                 for(int i=0; i<target.width; i++)
                 {
@@ -33,6 +34,7 @@ public class ProgressDisplayer : MonoBehaviour
                     {
                         if(target.grids[i,j])
                         {
+                            //Debug.Log(i + " " + j);
                             var x = Instantiate(subDisplayerSource, this.gameObject.transform);
                             subs[i,j] = x.GetComponent<Image>();
                             x.transform.localPosition = new Vector2(cur.x, -cur.y);

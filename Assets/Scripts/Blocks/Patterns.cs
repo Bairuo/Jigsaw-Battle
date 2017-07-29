@@ -136,7 +136,7 @@ public class Pattern
             GeneratePatternList(targetsData, ref targets);
             targetPatternListGenerated = true;
         }
-        return blocks[ID];
+        return targets[ID];
     }
     public static int randomTargetID
     {
