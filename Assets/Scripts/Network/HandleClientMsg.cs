@@ -37,6 +37,17 @@ public class HandleClientMsg{
     }
 
     //（针对）战斗类协议
+    public void BlockGenerate(ProtocolBase protoBase)
+    {
+        ProtocolBytes proto = (ProtocolBytes)protoBase;
+        int start = 0;
+        string name = proto.GetString(start, ref start);
+        float x = proto.Getfloat(start, ref start);
+        float y = proto.Getfloat(start, ref start);
+
+        BlockGenerator.instance.Generate(x, y);
+    }
+
     public void PlayerTurn(ProtocolBase protoBase)
     {
         //Client.instance.posmanager.PlayerTurn(protoBase);

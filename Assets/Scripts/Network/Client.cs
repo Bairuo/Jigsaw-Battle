@@ -256,6 +256,34 @@ public class Client
     }
 
     //针对性协议
+    public void BlockGenerate(ProtocolBase protoBase)
+    {
+        ProtocolBytes proto = (ProtocolBytes)protoBase;
+        int start = 0;
+        string name = proto.GetString(start, ref start);
+        float x = proto.Getfloat(start, ref start);
+        float y = proto.Getfloat(start, ref start);
+
+        if(BlockGenerator.instance != null)BlockGenerator.instance.Generate(x, y);
+        else
+        {
+            lock (msgList)
+            {
+                msgList.Add(protoBase);
+            }
+        }
+    }
+
+    public void SendBlockGenerate(float x, float y)
+    {
+        ProtocolBytes protocol = new ProtocolBytes();
+        protocol.AddString("BlockGenerate");
+        protocol.AddFloat(x);
+        protocol.AddFloat(y);
+
+        Send(protocol);
+    }
+
 
     public void SendHit(string id, int isPlayer, int damage)
     {
