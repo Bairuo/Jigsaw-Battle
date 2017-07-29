@@ -48,7 +48,7 @@ public class BlockGenerator : MonoBehaviour
     {
         Client.instance.Update();
         if (Client.instance.playerid != "0") return;
-
+        
         t += Time.fixedDeltaTime;
         if(t > delay)
         {
@@ -127,7 +127,7 @@ public class BlockGenerator : MonoBehaviour
         Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
         
         /// local generating.
-        Generate(loc.x, loc.y, Pattern.randomBlockID);
+        Generate(loc.x, loc.y, ID);
         
     }
     
@@ -138,6 +138,8 @@ public class BlockGenerator : MonoBehaviour
         /// The random type thing are done by the block itself.
         // var x = Instantiate(blockSource);
         // x.transform.position = loc;
+        
+        Debug.Log(x + " " + y + " " + patternID);
         
         var g = Instantiate(blockSource);
         g.GetComponent<Block>().patternID = patternID;

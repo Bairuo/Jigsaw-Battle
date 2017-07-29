@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Camp
+public class Camp : MonoBehaviour
 {
 	/// original color: RGB:DFE3CB
-	static public Color[] campColor = new Color[]{Util.StringToColor("#F96900"), Util.StringToColor("#69D1E7")};
-	static public TargetArea[] campTarget = new TargetArea[2];
+	public Color[] campColor = new Color[]{Util.StringToColor("#F96900"), Util.StringToColor("#69D1E7")};
+	public TargetArea[] campTarget;
 	
 	static public int GetCamp(int playerID)
 	{

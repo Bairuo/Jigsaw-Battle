@@ -9,7 +9,7 @@ public class TargetArea : MonoBehaviour
     public int playerID; // or campID as -1 or 1.
     public TargetBlock[,] grids; // true enabled, false disabled.
     public TargetArea opposite;
-    public Pattern p;
+    int patternID = -1;
     public Slider slider;
     public Text rateDisplay;
     public bool fullfilled;
@@ -38,14 +38,26 @@ public class TargetArea : MonoBehaviour
         }
     }
     
-    void Start() 
+    void Start()
     {
         Camp.SetTargetArea(this, playerID);
         
+    }
+    
+    void AreaInit()
+    {
+        if(patternID == -1)
+        {
+            opposite.patternID = patternID = Pattern.randomTargetID;
+            Client.instance.AreaInit(patternID);
+        }
+    }
+    
+    void AreaInit(int patternID)
+    {
         fullfilled = false;
         
-        if(p == null)
-            opposite.p = this.p = Pattern.randomTarget;
+        Pattern p = Pattern.GetTargetPattern(patternID);
         
         height = p.height;
         width = p.width;
@@ -79,6 +91,10 @@ public class TargetArea : MonoBehaviour
     
     void Update()
     {
+        if (Client.instance.playerid != "0") return;
+        
+        AreaInit();
+        
         int cnt = 0;
         int crr = 0;
         for(int i=0; i<height; i++)

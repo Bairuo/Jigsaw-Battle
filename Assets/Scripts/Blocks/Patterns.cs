@@ -114,37 +114,42 @@ public class Pattern
     }
     
     
+    // private static bool targetPatternListGenerated = false;
+    // public static Pattern randomTarget
+    // {
+    //     get{
+    //         if(!targetPatternListGenerated)
+    //         {
+    //             GeneratePatternList(targetsData, ref targets);
+    //             targetPatternListGenerated = true;
+    //         }
+    //         return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
+    //     }
+    // }
+    
+    /// [!] Anternative.
     private static bool targetPatternListGenerated = false;
-    public static Pattern randomTarget
+    public static Pattern GetTargetPattern(int ID)
     {
-        get{
+        if(!targetPatternListGenerated)
+        {
+            GeneratePatternList(targetsData, ref targets);
+            targetPatternListGenerated = true;
+        }
+        return blocks[ID];
+    }
+    public static int randomTargetID
+    {
+        get
+        {
             if(!targetPatternListGenerated)
             {
                 GeneratePatternList(targetsData, ref targets);
                 targetPatternListGenerated = true;
             }
-            return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
+            return Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count));
         }
     }
-    
-    /// [!] Anternative.
-    // private static bool targetPatternListGenerated = false;
-    // public static Pattern GetTargetPattern(int ID)
-    // {
-    //     if(!targetPatternListGenerated)
-    //     {
-    //         GeneratePatternList(targetsData, ref targets);
-    //         targetPatternListGenerated = true;
-    //     }
-    //     return blocks[ID];
-    // }
-    // public static int randomTargetID
-    // {
-    //     get
-    //     {
-    //         return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
-    //     }
-    // }
     
     /// may cause OutOfRangeException. Let it go along.
     public int this[int x, int y]
