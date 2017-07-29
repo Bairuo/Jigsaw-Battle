@@ -128,6 +128,7 @@ public class BlockGenerator : MonoBehaviour
         
         /// local generating.
         Generate(loc.x, loc.y, Pattern.randomBlockID);
+        
     }
     
     /// Generate block.
