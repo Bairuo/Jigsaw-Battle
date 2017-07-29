@@ -76,8 +76,32 @@ public class Pattern
         }
     }
     
+    /// [!] depreated.
+    // private static bool blockPatternListGenerated = false;
+    // public static Pattern randomBlock
+    // {
+    //     get{
+    //         if(!blockPatternListGenerated)
+    //         {
+    //             GeneratePatternList(blocksData, ref blocks);
+    //             blockPatternListGenerated = true;
+    //         }
+    //         return blocks[Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Count))]; 
+    //     }
+    // }
+    
     private static bool blockPatternListGenerated = false;
-    public static Pattern randomBlock
+    public static Pattern GetBlockPattern(int ID)
+    {
+        if(!blockPatternListGenerated)
+        {
+            GeneratePatternList(blocksData, ref blocks);
+            blockPatternListGenerated = true;
+        }
+        return blocks[ID];
+    }
+    
+    public static int randomBlockID
     {
         get{
             if(!blockPatternListGenerated)
@@ -85,9 +109,10 @@ public class Pattern
                 GeneratePatternList(blocksData, ref blocks);
                 blockPatternListGenerated = true;
             }
-            return blocks[Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Count))]; 
+            return Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Count));
         }
     }
+    
     
     private static bool targetPatternListGenerated = false;
     public static Pattern randomTarget
@@ -101,6 +126,25 @@ public class Pattern
             return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
         }
     }
+    
+    /// [!] Anternative.
+    // private static bool targetPatternListGenerated = false;
+    // public static Pattern GetTargetPattern(int ID)
+    // {
+    //     if(!targetPatternListGenerated)
+    //     {
+    //         GeneratePatternList(targetsData, ref targets);
+    //         targetPatternListGenerated = true;
+    //     }
+    //     return blocks[ID];
+    // }
+    // public static int randomTargetID
+    // {
+    //     get
+    //     {
+    //         return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
+    //     }
+    // }
     
     /// may cause OutOfRangeException. Let it go along.
     public int this[int x, int y]
