@@ -41,7 +41,19 @@ public class TargetArea : MonoBehaviour
     void Start()
     {
         Camp.SetTargetArea(this, playerID);
-        
+    }
+
+    public static void NetAreaInit(string tag, int patternID){
+        //Debug.Log("Is client");
+        /*
+        GameObject area = GameObject.FindGameObjectWithTag(tag);
+        area.GetComponent<TargetArea>().AreaInit(patternID);
+         * */
+        GameObject[] areas = GameObject.FindGameObjectsWithTag("Area");
+        foreach (var item in areas)
+        {
+            item.GetComponent<TargetArea>().AreaInit(patternID);
+        }
     }
     
     void AreaInit()
@@ -49,11 +61,15 @@ public class TargetArea : MonoBehaviour
         if(patternID == -1)
         {
             opposite.patternID = patternID = Pattern.randomTargetID;
-            Client.instance.AreaInit(patternID);
+            //Debug.Log(patternID);
+            AreaInit(patternID);
+            opposite.AreaInit(patternID);
+            Client.instance.SendAreaInit(this.tag, patternID);
+            
         }
     }
     
-    void AreaInit(int patternID)
+    public void AreaInit(int patternID)
     {
         fullfilled = false;
         
@@ -61,6 +77,7 @@ public class TargetArea : MonoBehaviour
         
         height = p.height;
         width = p.width;
+        //Debug.Log(playerID + " " + patternID + " cr " + height + " " + width);
         
         baseloc = new Vector2(- width * 0.5f, height * 0.5f);
         halfloc = new Vector2( 0.5f, -0.5f);

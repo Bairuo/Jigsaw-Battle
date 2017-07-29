@@ -20,21 +20,27 @@ public class ProgressDisplayer : MonoBehaviour
     
     void LateUpdate()
     {
-        if(!inited)
+        if (!inited)
         {
-            if(Camp.GetTarget(playerID))
+            Debug.Log("init");
+            target = Camp.GetTarget(playerID);
+            if (target != null && target.grids != null)
             {
                 target = Camp.GetTarget(playerID);
                 subs = new Image[target.width, target.height];
+                Debug.Log(subs == null);
+                //Debug.Log(target.width +" "+ target.height);
+                //Debug.Log("* " + subs.GetLength(0) + " " + subs.GetLength(1));
+                //Debug.Log("* " + target.grids.GetLength(0) + " " + target.grids.GetLength(1));
                 Vector2 cur = new Vector2(0.0f, 0.0f);
-                for(int i=0; i<target.width; i++)
+                for (int i = 0; i < target.width; i++)
                 {
-                    for(int j=0; j<target.height; j++)
+                    for (int j = 0; j < target.height; j++)
                     {
-                        if(target.grids[i,j])
+                        if (target.grids[i, j])
                         {
                             var x = Instantiate(subDisplayerSource, this.gameObject.transform);
-                            subs[i,j] = x.GetComponent<Image>();
+                            subs[i, j] = x.GetComponent<Image>();
                             x.transform.localPosition = new Vector2(cur.x, -cur.y);
                         }
                         cur.x += offset.x;
@@ -44,9 +50,16 @@ public class ProgressDisplayer : MonoBehaviour
                 }
                 inited = true;
             }
-            else return;
+            else
+            {
+                Debug.Log("failed.");
+                return;
+            }
         }
-        
+
+        //Debug.Log(subs.GetLength(0) + " " + subs.GetLength(1));
+        //Debug.Log(target.grids.GetLength(0) + " " + target.grids.GetLength(1));
+
         for(int i=0; i<target.width; i++)
             for(int j=0; j<target.height; j++)
             {
