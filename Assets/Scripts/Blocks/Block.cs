@@ -35,8 +35,9 @@ public class Block : MonoBehaviour
     };
     public State state = State.FreeToCatch;
     
-    int playerID = 1; // -1 for none. 0 for recently obstacles. ID counts from 1.
-    float t = 0.0f; // time count.
+    int playerID = 1; // 0 for none.
+    
+    float t = 0.0f; // time counter.
     
     // catching...
     float radius;
@@ -61,13 +62,15 @@ public class Block : MonoBehaviour
     
 //=======================================================================================
     
+    /// for stencil drawing, increase by every new instance of sub-blocks by 3.
     static int baseCount = 0;
+    public int patternID; // delivered from generator.
     /// [!]Notice: Assume that all sub-blocks size is 1.0x1.0.
     void BuildSubBlocks()
     {
         int count = 0;
         circle = this.gameObject.transform.GetChild(0).gameObject;
-        Pattern p = Pattern.randomBlock;
+        Pattern p = Pattern.GetBlockPattern(patternID);
         height = p.height;
         width = p.width;
         

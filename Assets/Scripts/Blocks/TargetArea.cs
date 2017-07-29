@@ -1,17 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TargetArea : MonoBehaviour
 {
     public GameObject gridSource;
     public int playerID; // or campID as -1 or 1.
     public TargetBlock[,] grids; // true enabled, false disabled.
-    
+    public TargetArea opposite;
+    int patternID = -1;
+    public Slider slider;
+    public Text rateDisplay;
     public bool fullfilled;
     
-    int height;
-    int width;
+    public int height;
+    public int width;
     
     Vector2 baseloc;
     Vector2 halfloc;
@@ -24,14 +28,37 @@ public class TargetArea : MonoBehaviour
             return true;
         }}
     
+    public bool bonusCompleted { get
+        {
+            for(int i=0; i<height; i++)
+                for(int j=0; j<width; j++)
+                    if(grids[i,j] && grids[i,j].isBonus && !grids[i,j].established)
+                        return false;
+            return true;
+        }
+    }
     
-    void Start() 
+    void Start()
     {
         Camp.SetTargetArea(this, playerID);
         
+    }
+    
+    void AreaInit()
+    {
+        if(patternID == -1)
+        {
+            opposite.patternID = patternID = Pattern.randomTargetID;
+            Client.instance.AreaInit(patternID);
+        }
+    }
+    
+    void AreaInit(int patternID)
+    {
         fullfilled = false;
         
-        Pattern p = Pattern.randomTarget;
+        Pattern p = Pattern.GetTargetPattern(patternID);
+        
         height = p.height;
         width = p.width;
         
@@ -53,6 +80,8 @@ public class TargetArea : MonoBehaviour
                     grids[i,j] = g.GetComponent<TargetBlock>();
                     g.transform.localScale = this.gameObject.transform.localScale;
                     grids[i,j].playerID = playerID;
+                    if(p[i,j] > 1)
+                        grids[i,j].isBonus = true;
                 }
                 else
                 {
@@ -62,6 +91,24 @@ public class TargetArea : MonoBehaviour
     
     void Update()
     {
+        if (Client.instance.playerid != "0") return;
+        
+        AreaInit();
+        
+        int cnt = 0;
+        int crr = 0;
+        for(int i=0; i<height; i++)
+            for(int j=0; j<width; j++)
+                if(grids[i,j])
+                {
+                    crr++;
+                    if(grids[i,j].established)
+                        cnt++;
+                }
+        rateDisplay.text = (100 * (slider.value = (float)cnt / crr)).ToString("00.") + "%";
+        
+        if(bonusCompleted)
+            SetBonus();
     }
     
     public struct Point
@@ -96,5 +143,12 @@ public class TargetArea : MonoBehaviour
     {
         fullfilled  = true;
         /// TODO!!!
+    }
+    
+    bool bonusGiven = true;
+    public void SetBonus()
+    {
+        if(bonusGiven) return;
+        // TODO!!!
     }
 }

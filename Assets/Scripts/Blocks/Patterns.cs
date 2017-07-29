@@ -34,7 +34,7 @@ public class Pattern
             for(int j=0; j<width; j++)
             {
                 v[i,j] = (s[i][j] == '0' || s[i][j] == ' ' || s[i][j] == '.' ? 0 : 1);
-                if(s[i][j] == '$') v[i,j]++;
+                if(s[i][j] == '$') v[i,j]++; // v[i,j] > 1.
             }
         }
     }
@@ -76,8 +76,32 @@ public class Pattern
         }
     }
     
+    /// [!] depreated.
+    // private static bool blockPatternListGenerated = false;
+    // public static Pattern randomBlock
+    // {
+    //     get{
+    //         if(!blockPatternListGenerated)
+    //         {
+    //             GeneratePatternList(blocksData, ref blocks);
+    //             blockPatternListGenerated = true;
+    //         }
+    //         return blocks[Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Count))]; 
+    //     }
+    // }
+    
     private static bool blockPatternListGenerated = false;
-    public static Pattern randomBlock
+    public static Pattern GetBlockPattern(int ID)
+    {
+        if(!blockPatternListGenerated)
+        {
+            GeneratePatternList(blocksData, ref blocks);
+            blockPatternListGenerated = true;
+        }
+        return blocks[ID];
+    }
+    
+    public static int randomBlockID
     {
         get{
             if(!blockPatternListGenerated)
@@ -85,20 +109,45 @@ public class Pattern
                 GeneratePatternList(blocksData, ref blocks);
                 blockPatternListGenerated = true;
             }
-            return blocks[Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Count))]; 
+            return Mathf.FloorToInt(UnityEngine.Random.Range(0, blocks.Count));
         }
     }
     
+    
+    // private static bool targetPatternListGenerated = false;
+    // public static Pattern randomTarget
+    // {
+    //     get{
+    //         if(!targetPatternListGenerated)
+    //         {
+    //             GeneratePatternList(targetsData, ref targets);
+    //             targetPatternListGenerated = true;
+    //         }
+    //         return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
+    //     }
+    // }
+    
+    /// [!] Anternative.
     private static bool targetPatternListGenerated = false;
-    public static Pattern randomTarget
+    public static Pattern GetTargetPattern(int ID)
     {
-        get{
+        if(!targetPatternListGenerated)
+        {
+            GeneratePatternList(targetsData, ref targets);
+            targetPatternListGenerated = true;
+        }
+        return blocks[ID];
+    }
+    public static int randomTargetID
+    {
+        get
+        {
             if(!targetPatternListGenerated)
             {
                 GeneratePatternList(targetsData, ref targets);
                 targetPatternListGenerated = true;
             }
-            return targets[Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count))];
+            return Mathf.FloorToInt(UnityEngine.Random.Range(0, targets.Count));
         }
     }
     

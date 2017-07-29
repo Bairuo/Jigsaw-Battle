@@ -30,6 +30,13 @@ public class BlockGenerator : MonoBehaviour
     public int maxAttempt = 64; // max attempt allowed when using Generate-one Mode.
     
     public float distance; // Will not deploy any block if a block has a distance to target point smaller than this.
+
+    public static BlockGenerator instance;
+
+    public BlockGenerator()
+    {
+        instance = this;
+    }
     
     void Start() 
     {
@@ -39,6 +46,9 @@ public class BlockGenerator : MonoBehaviour
     float t = 0f;
     void FixedUpdate()
     {
+        Client.instance.Update();
+        if (Client.instance.playerid != "0") return;
+        
         t += Time.fixedDeltaTime;
         if(t > delay)
         {
@@ -62,6 +72,7 @@ public class BlockGenerator : MonoBehaviour
                         if(CanGenerate(targets[ID]))
                         {
                             Generate(targets[ID]);
+                            //Client.instance.SendBlockGenerate(targeters[ID].transform.position.x, targeters[ID].transform.position.y);
                             generated = true;
                         }
                     }
@@ -71,6 +82,7 @@ public class BlockGenerator : MonoBehaviour
                         if(CanGenerate(targeters[ID].transform.position))
                         {
                             Generate(targeters[ID].transform.position);
+                            //Client.instance.SendBlockGenerate(targeters[ID].transform.position.x, targeters[ID].transform.position.y);
                             generated = true;
                         }
                     }
@@ -87,6 +99,7 @@ public class BlockGenerator : MonoBehaviour
                     if(CanGenerate(loc))
                     {
                         Generate(loc);
+                        //Client.instance.SendBlockGenerate(loc.x, loc.y);
                         generated = true;
                     }
                     count++;
@@ -105,10 +118,31 @@ public class BlockGenerator : MonoBehaviour
         return true;
     }
     
-    void Generate(Vector2 loc)
+    /// Main generation, generate an random pattern ID only on server.
+    public void Generate(Vector2 loc)
     {
+        int ID = Pattern.randomBlockID;
+    
+        // Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
+        Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
+        
+        /// local generating.
+        Generate(loc.x, loc.y, ID);
+        
+    }
+    
+    /// Generate block.
+    public void Generate(float x, float y, int patternID)
+    {
+        /// [!] depreated.
         /// The random type thing are done by the block itself.
-        var x = Instantiate(blockSource);
-        x.transform.position = loc;
+        // var x = Instantiate(blockSource);
+        // x.transform.position = loc;
+        
+        Debug.Log(x + " " + y + " " + patternID);
+        
+        var g = Instantiate(blockSource);
+        g.GetComponent<Block>().patternID = patternID;
+        g.transform.position = new Vector2(x, y);
     }
 }

@@ -9,12 +9,14 @@ public class TargetBlock : MonoBehaviour
     public Color disabledColor;
     public Color establishedColor;
     
+    public bool isBonus;
+    
     public int count; // how many blocks are taken up this target.
                       // should be always 0 or 1.
     
     public bool established; // whether this object is taken-up and settled down.
     
-    SpriteRenderer rd;
+    public SpriteRenderer rd;
     
     void Start()
     {
@@ -37,6 +39,11 @@ public class TargetBlock : MonoBehaviour
             }
         }
         else rd.color = disabledColor * Camp.GetColor(playerID);
+        
+        if(isBonus)
+        {
+            rd.color = rd.color * 1.3f;
+        }
     }
     
     public void Enter()
