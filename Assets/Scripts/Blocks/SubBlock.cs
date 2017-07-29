@@ -12,11 +12,11 @@ public class SubBlock : MonoBehaviour
         
     }
     
-    public TargetBlock tg = null;
+    public TargetBlock tg = null; // the block I already stand on last frame.
     
     void Update()
     {
-        TargetBlock tb = null;
+        TargetBlock tb = null; // the block I stand on this frame.
         if(target) tb = target.GetNearestBlock(this.gameObject.transform.position);
         
         // switch linked-sub-block from tg to tb.

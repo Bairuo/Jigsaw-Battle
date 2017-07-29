@@ -35,7 +35,7 @@ public class Block : MonoBehaviour
     };
     public State state = State.FreeToCatch;
     
-    int playerID = -1; // -1 for none. 0 for recently obstacles. ID counts from 1.
+    int playerID = 1; // -1 for none. 0 for recently obstacles. ID counts from 1.
     float t = 0.0f; // time count.
     
     // catching...
@@ -45,14 +45,16 @@ public class Block : MonoBehaviour
     Vector2 settleFrom;
     Vector2 settleTo;
     
-    public bool isSettlable {
+    public bool isSettlable
+    {
         get
         {
             bool able = true;
             foreach(var i in subs)
                 if(!i.tg) { able = false; break; }
             return able;
-        }}
+        }
+    }
     
     Vector2 baseloc;
     public Vector2 settleVec { get { return subs[0].GetDistanceVector(); } }
@@ -71,16 +73,14 @@ public class Block : MonoBehaviour
         
         for(int i=0; i<height; i++)
             for(int j=0; j<width; j++)
-                if(p[i,j]) count++; 
+                if(p[i,j] != 0) count++; 
         subs = new SubBlock[count];
         baseloc = new Vector2(- (width - 1) * 0.5f, (height - 1) * 0.5f);
-        
-        var crd = circle.GetComponent<SpriteRenderer>();
         int cnt = count; // Temp. count.
         
         for(int i=0; i<height; i++)
             for(int j=0; j<width; j++)
-                if(p[i,j])
+                if(p[i,j] != 0)
                 {
                     cnt--;
                     subs[cnt] = Instantiate(subSource, this.gameObject.transform).GetComponent<SubBlock>();
@@ -101,6 +101,8 @@ public class Block : MonoBehaviour
                     rg.sortingOrder = baseCount + 2 * count - 1 - cnt; // draw stencil.
                     rc.sortingOrder = baseCount + 3 * count - cnt; // clear stencil after draw the capture circle.
                 }
+        
+        var crd = circle.GetComponent<SpriteRenderer>();
         crd.sortingOrder = baseCount + 2 * count;
         baseCount += 3 * count;
     }
@@ -108,8 +110,6 @@ public class Block : MonoBehaviour
     void Start()
     {
         BuildSubBlocks();
-        foreach(var i in subs)
-            i.target = target;
     }
     
     
@@ -136,20 +136,38 @@ public class Block : MonoBehaviour
             case State.Settling : 
             {
                 t -= Time.fixedDeltaTime;
+                float rate = (t + settleDownTime) / (settleTime + settleDownTime);
+                CircleInterpolate(rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                
                 if(t > 0f) // Moving the block to the correct location.
                 {
-                    float rate = t / settleTime;
-                    float inter = rate * rate;
+                    float settleRate = t / settleTime;
+                    float inter = settleRate * settleRate;
                     this.gameObject.transform.position = inter * (settleFrom - settleTo) + settleTo;
                 }
-                else // Blcok is not placed correctly. Hold on a delay preventing mis-take this block.
+                else // Blcok is now placed correctly. Hold on a delay preventing mis-take this block.
                 {
                     this.gameObject.transform.position = settleTo;
                     if(t <= -settleDownTime) // Block hold-on duration ended.
                     {
                         t = 0f;
+                        CircleInterpolate(rate * rate, 9f);
                         state = State.SettleDown; // [!]automaton: To SettleDown.
                     }
+                }
+            }
+            break;
+            case State.SettleDown : // No state transform by itself.
+            {
+                t -= Time.fixedDeltaTime;
+                float rate = t / obstacleTime;
+                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                if(t <= 0f)
+                {
+                    t = 0f;
+                    CircleInterpolate(0f, 9f);
+                    foreach(var i in subs)
+                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                 }
             }
             break;
@@ -157,11 +175,11 @@ public class Block : MonoBehaviour
             {
                 t -= Time.fixedDeltaTime;
                 float rate = t / obstacleTime;
-                CircleInterpolate(rate * rate, Mathf.Max(width, height) * 0.5f);
+                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
                 if(t <= 0f)
                 {
                     t = 0f;
-                    CircleInterpolate(0f, 1f);
+                    CircleInterpolate(0f, 9f);
                     foreach(var i in subs)
                         i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                     state = State.FreeToCatch; // [!]automaton: To FreeToCatch.
@@ -217,7 +235,16 @@ public class Block : MonoBehaviour
         t = catchingTime;
         radius = MaxDistance(loc);
         circle.transform.position = loc;
+        if(state == State.SettleDown)
+            UnSettle();
         state = State.Catching;
+        
+        var crd = circle.GetComponent<SpriteRenderer>();
+        crd.color = Camp.GetColor(playerID);
+        target = Camp.GetTarget(playerID);
+        foreach(var i in subs)
+            i.target = target;
+        
         return true;
     }
     
@@ -241,13 +268,13 @@ public class Block : MonoBehaviour
         mx = Mathf.Max(mx, (relloc + rt - up).magnitude);
         mx = Mathf.Max(mx, (relloc - rt + up).magnitude);
         mx = Mathf.Max(mx, (relloc - rt - up).magnitude);
-        Debug.Log(mx);
         return mx;
     }
     
     /// x between 0 to 1. Size as the basic local scale when x == 1.
     public void CircleInterpolate(float x, float sz)
     {
+        x = Mathf.Clamp(x, 0.0f, 1.0f);
         circle.transform.localScale = new Vector2(sz * x, sz * x);
     }
     

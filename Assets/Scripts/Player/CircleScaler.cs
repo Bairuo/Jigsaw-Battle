@@ -38,6 +38,8 @@ public class CircleScaler : MonoBehaviour {
             timer -= Time.deltaTime;
         }
         float size = (timer / changeTime) * (localMaxSize - localSize) + localSize;
-        this.gameObject.transform.localScale = new Vector3(size, size, 1);
+        this.gameObject.transform.localScale = new Vector3(size, size, 1.0f);
+        this.gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 0.9f - timer / changeTime * 0.6f);
+        
     }
 }

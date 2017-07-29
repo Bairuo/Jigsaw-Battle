@@ -5,7 +5,7 @@ using UnityEngine;
 public class TargetArea : MonoBehaviour
 {
     public GameObject gridSource;
-    
+    public int playerID; // or campID as -1 or 1.
     public TargetBlock[,] grids; // true enabled, false disabled.
     
     public bool fullfilled;
@@ -27,6 +27,8 @@ public class TargetArea : MonoBehaviour
     
     void Start() 
     {
+        Camp.SetTargetArea(this, playerID);
+        
         fullfilled = false;
         
         Pattern p = Pattern.randomTarget;
@@ -40,16 +42,17 @@ public class TargetArea : MonoBehaviour
         
         for(int i=0; i<height; i++)
             for(int j=0; j<width; j++)
-                if(p[i,j])
+                if(p[i,j] != 0)
                 {
                     GameObject g = Instantiate(gridSource, this.gameObject.transform);
                     g.name = "grid(" + i + "," + j + ")";
                     Vector2 loc = new Vector2(j, -i) + baseloc + halfloc;
                     loc.x *= this.gameObject.transform.localScale.x;
                     loc.y *= this.gameObject.transform.localScale.y;
-                    g.transform.position = loc;
+                    g.transform.localPosition = loc;
                     grids[i,j] = g.GetComponent<TargetBlock>();
                     g.transform.localScale = this.gameObject.transform.localScale;
+                    grids[i,j].playerID = playerID;
                 }
                 else
                 {

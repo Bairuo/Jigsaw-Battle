@@ -1,0 +1,123 @@
+﻿using System;
+
+public class HandleClientMsg{
+    //连接类（信息回馈）
+    public void RoomNum(ProtocolBase protoBase)
+    {
+        ProtocolBytes proto = (ProtocolBytes)protoBase;
+        int start = 0;
+        string protoName = proto.GetString(start, ref start);
+        int num = proto.GetInt(start, ref start);
+        Client.instance.roomnum = num;
+        if (num == 2)
+        {
+            SceneManager.instance.StartScene();
+        }
+    }
+    public void Success(ProtocolBase protoBase)
+    {
+        ProtocolBytes proto = new ProtocolBytes();
+        proto.AddString("AddRoom");
+        proto.AddString(Client.instance.questroom);
+        Client.instance.Send(proto);
+    }
+    public void ID(ProtocolBase protoBase)
+    {
+        ProtocolBytes protol = (ProtocolBytes)protoBase;
+        int start = 0;
+        string protoName = protol.GetString(start, ref start);
+        int id = protol.GetInt(start, ref start);
+        int roomid = protol.GetInt(start, ref start);
+        int conn_id = protol.GetInt(start, ref start);
+        Client.instance.playerid = id.ToString();
+        Client.instance.roomid = roomid.ToString();
+        Client.instance.conn_id = conn_id;
+
+        Client.instance.UDPConnect();
+    }
+
+    //（针对）战斗类协议
+    public void PlayerTurn(ProtocolBase protoBase)
+    {
+        //Client.instance.posmanager.PlayerTurn(protoBase);
+    }
+    public void U(ProtocolBase protoBase)
+    {
+        //Client.instance.posmanager.PlayerTurn(protoBase);
+    }
+    public void Shoot(ProtocolBase protoBase)
+    {
+        //Client.instance.posmanager.Shoot(protoBase);
+    }
+    public void Hit(ProtocolBase protoBase)
+    {
+        Client.instance.posmanager.Hit(protoBase);
+    }
+
+    //(通用）战斗类协议
+    /*
+    public void StartScene(ProtocolBase protoBase)
+    {
+        SceneManager.instance.StartScene();
+    }
+    */
+    /*
+    public void AddPlayer(ProtocolBase protoBase)
+    {
+        if (GlobalInformation.instance.state == GlobalInformation.STATE.Curtain || GlobalInformation.instance.state == GlobalInformation.STATE.Fight)
+        {
+            Client.instance.posmanager.AddPlayer(protoBase);
+        }
+    }
+    public void AddEnemy(ProtocolBase protoBase)
+    {
+        if (GlobalInformation.instance.state == GlobalInformation.STATE.Curtain || GlobalInformation.instance.state == GlobalInformation.STATE.Fight)
+        {
+            Client.instance.posmanager.AddEnemy(protoBase);
+        }
+    }
+
+    //流程类协议
+    public void NextLevel(ProtocolBase protoBase)
+    {
+        Client.instance.posmanager.Close();
+        GameController.instance.REnterNextLevel();
+    }
+
+    public void Pause(ProtocolBase protoBase)
+    {
+        if (GlobalInformation.instance.state == GlobalInformation.STATE.Curtain || GlobalInformation.instance.state == GlobalInformation.STATE.Fight)
+        {
+            GameController.instance.RPause();
+        }
+
+    }
+    public void CurtainStart(ProtocolBase protoBase)
+    {
+        if (GlobalInformation.instance.state == GlobalInformation.STATE.Curtain)
+        {
+            Client.instance.posmanager.StartFight();
+            CurtainController.instance.RCurtainStart();
+        }
+
+    }
+    public void ReStart(ProtocolBase protoBase)
+    {
+        if (GlobalInformation.instance.state == GlobalInformation.STATE.Curtain || GlobalInformation.instance.state == GlobalInformation.STATE.Fight)
+        {
+            Client.instance.posmanager.Close();
+            GameController.instance.RReStart();
+        }
+
+    }
+    public void Return(ProtocolBase protoBase)
+    {
+        if (GlobalInformation.instance.state == GlobalInformation.STATE.Curtain || GlobalInformation.instance.state == GlobalInformation.STATE.Fight)
+        {
+            Client.instance.posmanager.Close();
+            GameController.instance.RReturn();
+        }
+
+    }
+     * */
+}
