@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Camp
+public class Camp : MonoBehaviour
 {
 	/// original color: RGB:DFE3CB
 	static public Color[] campColor = new Color[]{Util.StringToColor("#F96900"), Util.StringToColor("#69D1E7")};

@@ -37,6 +37,18 @@ public class HandleClientMsg{
     }
 
     //（针对）战斗类协议
+    public void AreaInit(ProtocolBase protoBase)
+    {
+        UnityEngine.Debug.Log(1);
+        ProtocolBytes proto = (ProtocolBytes)protoBase;
+        int start = 0;
+        string name = proto.GetString(start, ref start);
+        string tag = proto.GetString(start, ref start);
+        int patternID = proto.GetInt(start, ref start);
+
+        TargetArea.NetAreaInit(tag, patternID);
+    }
+
     public void BlockGenerate(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;

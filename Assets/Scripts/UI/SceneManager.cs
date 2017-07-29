@@ -22,7 +22,12 @@ public class SceneManager : MonoBehaviour {
 
     public void OnStartClick()
     {
-        Client.instance.Connect();
+        
+        if (Client.IsUse() == false)
+        {
+            Client.instance.Connect();
+        }
+            
     }
 
     public void StartScene()

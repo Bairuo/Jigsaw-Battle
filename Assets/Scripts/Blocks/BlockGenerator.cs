@@ -46,9 +46,10 @@ public class BlockGenerator : MonoBehaviour
     float t = 0f;
     void FixedUpdate()
     {
+        
         Client.instance.Update();
         if (Client.instance.playerid != "0") return;
-
+        
         t += Time.fixedDeltaTime;
         if(t > delay)
         {
@@ -123,7 +124,6 @@ public class BlockGenerator : MonoBehaviour
     {
         int ID = Pattern.randomBlockID;
     
-        // Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
         Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
         
         /// local generating.
