@@ -127,7 +127,7 @@ public class BlockGenerator : MonoBehaviour
         Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
         
         /// local generating.
-        Generate(loc.x, loc.y, Pattern.randomBlockID);
+        Generate(loc.x, loc.y, ID);
         
     }
     
@@ -138,7 +138,8 @@ public class BlockGenerator : MonoBehaviour
         /// The random type thing are done by the block itself.
         // var x = Instantiate(blockSource);
         // x.transform.position = loc;
-        
+        //Debug.Log("x " + x + " y " + y + " id " + patternID);
+
         var g = Instantiate(blockSource);
         g.GetComponent<Block>().patternID = patternID;
         g.transform.position = new Vector2(x, y);
