@@ -5,7 +5,7 @@ using UnityEngine;
 public class TransformController : MonoBehaviour {
     // Network
     public string controllerID = "";
-
+    Rigidbody2D rb2;
     GameObject controller;
     public float speed = 0.5f;
     public float redius = 5f; //重新出现区域的半径
@@ -37,7 +37,7 @@ public class TransformController : MonoBehaviour {
             return;
         }
 
-        Rigidbody2D rb2 = controller.GetComponent<Rigidbody2D>();
+        rb2 = controller.GetComponent<Rigidbody2D>();
         //if (Input.GetKey("up"))
         //{
         //    Vector2 velocity = rb2.velocity + new Vector2(0, 1);
@@ -64,43 +64,43 @@ public class TransformController : MonoBehaviour {
         //}
         Vector2 vec = joystick.rectT_Joy.anchoredPosition / 10;
         rb2.velocity = vec;
-        if(controller.tag == "Block")
-        {
-            if(Input.GetKey("e"))
-            {
-                if(controller.gameObject.GetComponent<Block>().Leave())
-                {
-                    controllerID = "";
-                    PlayerCreater();
-                    rb2.velocity = new Vector2(0, 0);
-                }
-            }
-        }
     }
 
-    Position PositionFinder()
+    Vector2 PositionFinder()
     {
-        Position[] poses = new Position[8];
-        poses[0].SetPostion(1, 1);
-        poses[1].SetPostion(1, 0);
-        poses[2].SetPostion(1, -1);
-        poses[3].SetPostion(0, 1);
-        poses[4].SetPostion(0, -1);
-        poses[5].SetPostion(-1, 1);
-        poses[6].SetPostion(-1, 0);
-        poses[7].SetPostion(-1, -1);
-        Position[] poses_r = new Position[8];
-        int count = 0;
-        foreach(Position pos in poses)
+        //Position[] poses = new Position[8];
+        //poses[0].SetPostion(1, 1);
+        //poses[1].SetPostion(1, 0);
+        //poses[2].SetPostion(1, -1);
+        //poses[3].SetPostion(0, 1);
+        //poses[4].SetPostion(0, -1);
+        //poses[5].SetPostion(-1, 1);
+        //poses[6].SetPostion(-1, 0);
+        //poses[7].SetPostion(-1, -1);
+        //Position[] poses_r = new Position[8];
+        //int count = 0;
+        //foreach(Position pos in poses)
+        //{
+        //    RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, new Vector2(pos.x, pos.y), 0, 0, redius);
+        //    if(!hit)
+        //    {
+        //        poses_r[count] = pos;
+        //        count++;
+        //    }
+        //}
+        //return poses_r[Random.Range(0, count)];
+        while(true)
         {
-            RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, new Vector2(pos.x, pos.y), 0, 0, redius);
-            if(!hit)
+            Vector2 pos_v2 = Random.insideUnitCircle;
+            RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, pos_v2, 0, 0, redius);
             {
-                poses_r[count] = pos;
-                count++;
+                if(!hit)
+                {
+                    return pos_v2;
+                }
             }
+
         }
-        return poses_r[Random.Range(0, count)];
     }
 
 
@@ -112,11 +112,11 @@ public class TransformController : MonoBehaviour {
 
     public void PlayerCreater()
     {
-        Position pos = PositionFinder();
+        Vector2 pos = PositionFinder();
         Transform parent = GameObject.Find("ObjectController").gameObject.transform;
         foreach(Transform child in parent)
         {   
-            if(child.gameObject.tag == "Player")
+            if(child.gameObject.tag == "Player" && child.gameObject.GetComponent<PlayerController>().netID == controllerID)
             {
                 Vector2 _pos = controller.transform.position;
                 TransformChanger(child.gameObject);
@@ -125,6 +125,18 @@ public class TransformController : MonoBehaviour {
                 child.localScale = _localScale;
                 child.gameObject.SetActive(true);
                 break;
+            }
+        }
+    }
+
+    public void OnLeaveClick()
+    {
+        if (controller.tag == "Block")
+        {
+            if (controller.gameObject.GetComponent<Block>().Leave())
+            {
+                PlayerCreater();
+                rb2.velocity = new Vector2(0, 0);
             }
         }
     }
