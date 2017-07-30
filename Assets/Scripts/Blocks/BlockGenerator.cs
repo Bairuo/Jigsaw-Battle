@@ -137,10 +137,11 @@ public class BlockGenerator : MonoBehaviour
 
         GameObject g = Instantiate(blockSource) as GameObject;
         g.GetComponent<Block>().net_id = g.GetInstanceID().ToString();
-        NetRegister(g);
+        
 
         g.GetComponent<Block>().patternID = patternID;
         g.transform.position = new Vector2(x, y);
+        NetRegister(g);
 
         return g.GetInstanceID().ToString();
     }
@@ -149,16 +150,16 @@ public class BlockGenerator : MonoBehaviour
     {
         GameObject g = Instantiate(blockSource) as GameObject;
         g.GetComponent<Block>().net_id = net_id;
-        NetRegister(g);
-
+        
         g.GetComponent<Block>().patternID = patternID;
         g.transform.position = new Vector2(x, y);
+        NetRegister(g);
 
         return g.GetInstanceID().ToString();
     }
 
     void NetRegister(GameObject block)
     {
-
+        Client.instance.posmanager.BlockRegister(block);
     }
 }

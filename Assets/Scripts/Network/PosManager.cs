@@ -47,6 +47,7 @@ public class PosManager
         string netID = block.GetComponent<Block>().net_id;
         NetUnitData blockinfo = new NetUnitData(netID, block);
 
+        //Debug.Log(netID + " " + blockinfo.fpos);
         lock(blocks)blocks.Add(netID, block);
         lock(blocksinfo)blocksinfo.Add(netID, blockinfo);
     }
@@ -114,33 +115,18 @@ public class PosManager
 
         }
 
-        if (playerID == "0")
+        foreach (var item in blocks)
         {
-
-
-            /*
-            lock(blocks)
-            foreach (var item in blocks)
+            if (item.Value.GetComponentInChildren<TransformController>() != null)
             {
+                string netID = item.Value.GetComponentInChildren<TransformController>().controllerID;
+                if (netID != playerID) continue;
 
-            }*/
-            
-            /*
-            lock (GameController.instance.enemies)
-            foreach (var item in GameController.instance.enemies)
-            {
-                if (item.Value.GetComponent<Character>().ISDeath) continue;
-                ProtocolBytes unitproto = NetUnitData.GetUnitData("UpdateUnitInfo", item.Key.ToString(), item.Value.transform.position);
+                Block block = item.Value.GetComponent<Block>();
+                ProtocolBytes unitproto = NetUnitData.GetUnitData("UpdateUnitInfo", block.net_id, item.Value.transform.position);
+
                 Client.instance.Send(unitproto);
             }
-            lock (GameController.instance.enemies2)
-            foreach (var item in GameController.instance.enemies2)
-            {
-                if (item.Value.GetComponent<Character>().ISDeath) continue;
-                ProtocolBytes unitproto = NetUnitData.GetUnitData("UpdateUnitInfo", item.Key.ToString(), item.Value.transform.position);
-                Client.instance.Send(unitproto);
-            }
-             * */
         }
     }
 
@@ -183,6 +169,7 @@ public class PosManager
         if (blocksinfo.ContainsKey(id))
         {
             blocksinfo[id].Update(pos);
+            Debug.Log(blocksinfo[id].fpos);
         }
         if (playersinfo.ContainsKey(id))
         {
@@ -246,6 +233,24 @@ public class PosManager
             if (player.GetComponent<PlayerController>().netID == playerID) continue;
             //Debug.Log(id + " " + fpos);
             lock(player)player.transform.position = Vector3.Lerp(pos, fpos, playersinfo[id].delta);
+        }
+
+        foreach (var item in blocks)
+        {
+            if (item.Value.GetComponentInChildren<TransformController>() != null)
+            {
+                string netID = item.Value.GetComponentInChildren<TransformController>().controllerID;
+                if (netID == playerID) continue;
+                
+                //Debug.Log("Update" + item.Key + " " + blocksinfo[item.Key].fpos);
+
+                GameObject block = item.Value;
+                string id = item.Key;
+                Vector3 fpos = blocksinfo[id].fpos;
+                Vector3 pos = block.transform.position;
+
+                lock (block) block.transform.position = Vector3.Lerp(pos, fpos, blocksinfo[id].delta);
+            }
         }
     }
     
