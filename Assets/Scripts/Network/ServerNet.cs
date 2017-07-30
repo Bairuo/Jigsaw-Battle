@@ -82,32 +82,17 @@ public class ServerNet
     }
     public bool AddRoom(Conn conn, int questid)
     {
-        if (questid <= 0 || questid >= conns.Length)
-        {
-            int RoomIndex = NewRoomIndex();
+        int RoomIndex = NewRoomIndex();
 
-            if (RoomIndex < 0)
-            {
-                ClosePlayer(conn);
-                return false;
-            }
-
-            rooms[RoomIndex].AddPlayer(conn);
-            return true;
-        }
-        else
+        if (RoomIndex < 0)
         {
-            if (rooms[questid].isFull)
-            {
-                ClosePlayer(conn);
-                return false;
-            }
-            else
-            {
-                rooms[questid].AddPlayer(conn);
-                return true;
-            }
+            ClosePlayer(conn);
+            return false;
         }
+
+        rooms[RoomIndex].AddPlayer(conn);
+
+        return true;
 
     }
 

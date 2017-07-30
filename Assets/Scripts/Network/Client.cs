@@ -79,6 +79,13 @@ public class Client
     public bool Connect()
     {
         string host = "119.23.52.136";
+        
+        // Debug
+        if (ServerNet.IsUse())
+        {
+            host = "127.0.0.1";
+        }
+
         int port = 9970;
         try
         {

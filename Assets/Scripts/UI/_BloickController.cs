@@ -11,7 +11,7 @@ public class _BloickController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         float alpha = Random.value * 0.3f + 0.2f;
-        Debug.Log(alpha);
+        //Debug.Log(alpha);
         this.gameObject.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
         coroutine = WaitAndDestroy(1.0f);
         StartCoroutine(coroutine);
