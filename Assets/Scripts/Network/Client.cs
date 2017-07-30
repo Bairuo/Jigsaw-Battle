@@ -263,6 +263,7 @@ public class Client
     }
 
     //针对性协议
+    /*
     public void BlockGenerate(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;
@@ -280,6 +281,15 @@ public class Client
                 msgList.Add(protoBase);
             }
         }
+    }*/
+
+    public void SendPlayerInit()
+    {
+        ProtocolBytes protocol = new ProtocolBytes();
+        protocol.AddString("PlayerInit");
+        protocol.AddString(playerid);
+
+        Send(protocol);
     }
 
     public void SendBlockGenerate(float x, float y, int ID)
@@ -292,7 +302,6 @@ public class Client
 
         Send(protocol);
     }
-
     public void SendAreaInit(string tag, int patternID)
     {
         ProtocolBytes protocol = new ProtocolBytes();

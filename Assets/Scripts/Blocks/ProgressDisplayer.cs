@@ -22,13 +22,13 @@ public class ProgressDisplayer : MonoBehaviour
     {
         if (!inited)
         {
-            Debug.Log("init");
+            //Debug.Log("init");
             target = Camp.GetTarget(playerID);
             if (target != null && target.grids != null)
             {
                 target = Camp.GetTarget(playerID);
                 subs = new Image[target.width, target.height];
-                Debug.Log(subs == null);
+                //Debug.Log(subs == null);
                 //Debug.Log(target.width +" "+ target.height);
                 //Debug.Log("* " + subs.GetLength(0) + " " + subs.GetLength(1));
                 //Debug.Log("* " + target.grids.GetLength(0) + " " + target.grids.GetLength(1));
@@ -52,7 +52,7 @@ public class ProgressDisplayer : MonoBehaviour
             }
             else
             {
-                Debug.Log("failed.");
+                //Debug.Log("failed.");
                 return;
             }
         }

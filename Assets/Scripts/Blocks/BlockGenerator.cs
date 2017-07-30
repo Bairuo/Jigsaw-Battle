@@ -73,7 +73,6 @@ public class BlockGenerator : MonoBehaviour
                         if(CanGenerate(targets[ID]))
                         {
                             Generate(targets[ID]);
-                            //Client.instance.SendBlockGenerate(targeters[ID].transform.position.x, targeters[ID].transform.position.y);
                             generated = true;
                         }
                     }
@@ -83,7 +82,6 @@ public class BlockGenerator : MonoBehaviour
                         if(CanGenerate(targeters[ID].transform.position))
                         {
                             Generate(targeters[ID].transform.position);
-                            //Client.instance.SendBlockGenerate(targeters[ID].transform.position.x, targeters[ID].transform.position.y);
                             generated = true;
                         }
                     }
@@ -100,7 +98,6 @@ public class BlockGenerator : MonoBehaviour
                     if(CanGenerate(loc))
                     {
                         Generate(loc);
-                        //Client.instance.SendBlockGenerate(loc.x, loc.y);
                         generated = true;
                     }
                     count++;

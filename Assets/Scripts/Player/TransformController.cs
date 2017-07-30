@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TransformController : MonoBehaviour {
+    // Network
+    public string controllerID = "";
+
     GameObject controller;
     public float speed = 0.5f;
     public float redius = 5f; //重新出现区域的半径
@@ -29,6 +32,11 @@ public class TransformController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        if (controllerID != Client.instance.playerid)
+        {
+            return;
+        }
+
         Rigidbody2D rb2 = controller.GetComponent<Rigidbody2D>();
         //if (Input.GetKey("up"))
         //{
@@ -62,6 +70,7 @@ public class TransformController : MonoBehaviour {
             {
                 if(controller.gameObject.GetComponent<Block>().Leave())
                 {
+                    controllerID = "";
                     PlayerCreater();
                     rb2.velocity = new Vector2(0, 0);
                 }
