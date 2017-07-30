@@ -118,7 +118,7 @@ public class Block : MonoBehaviour
     
 //=======================================================================================
     
-    /// Changed from UPdate() to FixedUpdate()...
+    /// Changed from Update() to FixedUpdate()...
     void FixedUpdate()
     {
         /// time counter. should be sync.
