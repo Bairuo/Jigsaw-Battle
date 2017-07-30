@@ -74,7 +74,6 @@ public class BlockGenerator : MonoBehaviour
                         if(CanGenerate(targets[ID]))
                         {
                             Generate(targets[ID]);
-                            //Client.instance.SendBlockGenerate(targeters[ID].transform.position.x, targeters[ID].transform.position.y);
                             generated = true;
                         }
                     }
@@ -84,7 +83,6 @@ public class BlockGenerator : MonoBehaviour
                         if(CanGenerate(targeters[ID].transform.position))
                         {
                             Generate(targeters[ID].transform.position);
-                            //Client.instance.SendBlockGenerate(targeters[ID].transform.position.x, targeters[ID].transform.position.y);
                             generated = true;
                         }
                     }
@@ -101,7 +99,6 @@ public class BlockGenerator : MonoBehaviour
                     if(CanGenerate(loc))
                     {
                         Generate(loc);
-                        //Client.instance.SendBlockGenerate(loc.x, loc.y);
                         generated = true;
                     }
                     count++;
@@ -126,15 +123,13 @@ public class BlockGenerator : MonoBehaviour
     {
         int ID = Pattern.randomBlockID;
     
-        Client.instance.SendBlockGenerate(loc.x, loc.y, ID);
-        
         /// local generating.
-        Generate(loc.x, loc.y, ID);
-        
+        string net_id = Generate(loc.x, loc.y, ID);
+        Client.instance.SendBlockGenerate(net_id, loc.x, loc.y, ID);
     }
     
     /// Generate block.
-    public void Generate(float x, float y, int patternID)
+    public string Generate(float x, float y, int patternID)
     {
         /// [!] depreated.
         /// The random type thing are done by the block itself.
@@ -142,8 +137,31 @@ public class BlockGenerator : MonoBehaviour
         // x.transform.position = loc;
         //Debug.Log("x " + x + " y " + y + " id " + patternID);
 
-        var g = Instantiate(blockSource);
+        GameObject g = Instantiate(blockSource) as GameObject;
+        g.GetComponent<Block>().net_id = g.GetInstanceID().ToString();
+        
+
         g.GetComponent<Block>().patternID = patternID;
         g.transform.position = new Vector2(x, y);
+        NetRegister(g);
+
+        return g.GetInstanceID().ToString();
+    }
+
+    public string Generate(string net_id, float x, float y, int patternID)
+    {
+        GameObject g = Instantiate(blockSource) as GameObject;
+        g.GetComponent<Block>().net_id = net_id;
+        
+        g.GetComponent<Block>().patternID = patternID;
+        g.transform.position = new Vector2(x, y);
+        NetRegister(g);
+
+        return g.GetInstanceID().ToString();
+    }
+
+    void NetRegister(GameObject block)
+    {
+        Client.instance.posmanager.BlockRegister(block);
     }
 }

@@ -5,6 +5,9 @@ using UnityEngine.Rendering;
 
 public class Block : MonoBehaviour
 {
+    // net
+    public string net_id;
+
     // properties...
     public TargetArea target = null;
     public GameObject subSource;

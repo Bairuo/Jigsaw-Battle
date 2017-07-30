@@ -54,6 +54,11 @@ public class HandleServerMsg{
     }
 
     //(通用）战斗类协议
+    public void PlayerInit(Conn conn, ProtocolBase protoBase)
+    {
+        ServerNet.instance.rooms[conn.roomid].BroadcastOthers(protoBase, conn.id);
+        //ServerNet.instance.rooms[conn.roomid].Broadcast(protoBase);
+    }
     public void AreaInit(Conn conn, ProtocolBase protoBase)
     {
         ServerNet.instance.rooms[conn.roomid].BroadcastOthers(protoBase, conn.id);

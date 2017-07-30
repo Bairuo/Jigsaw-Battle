@@ -27,6 +27,7 @@ public class _BloickController : MonoBehaviour {
     private IEnumerator WaitAndDestroy(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
+        //Debug.Log(1);
         Destroy(this.gameObject);
     }
 }
