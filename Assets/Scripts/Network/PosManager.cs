@@ -169,7 +169,7 @@ public class PosManager
         if (blocksinfo.ContainsKey(id))
         {
             blocksinfo[id].Update(pos);
-            Debug.Log(blocksinfo[id].fpos);
+            //Debug.Log(blocksinfo[id].fpos);
         }
         if (playersinfo.ContainsKey(id))
         {
@@ -211,7 +211,7 @@ public class PosManager
     public void Update()
     {
         //0.085,0.075,0.1,0.15,0.19,0.2
-        if (Time.time - lastSendTime > 0.1f)
+        if (Time.time - lastSendTime > 0.085f)
         {
             SendPos();
             lastSendTime = Time.time;
