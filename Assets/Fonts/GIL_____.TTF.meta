@@ -1,11 +1,16 @@
 fileFormatVersion: 2
 <<<<<<< HEAD
+guid: d9d5d436f5ffef549882a3daa01469ea
+timeCreated: 1501231211
+=======
+<<<<<<< HEAD
 guid: ae12e85a2ed614559adfb6dbfaa4b33c
 timeCreated: 1501231018
 =======
 guid: d07731fd56efc9d4db2d53ba30ebaea3
 timeCreated: 1501234760
 >>>>>>> d43bd863e760ddf2b4f2acfe03ea65503ca7baad
+>>>>>>> 999692933db8e98e0a36a90144b0e5f6c3956c4c
 licenseType: Free
 TrueTypeFontImporter:
   serializedVersion: 4

@@ -9,7 +9,7 @@ public class HandleClientMsg{
         string protoName = proto.GetString(start, ref start);
         int num = proto.GetInt(start, ref start);
         Client.instance.roomnum = num;
-        if (num == 2)
+        if (num == 2 || ServerNet.IsUse())
         {
             SceneManager.instance.StartScene();
         }
