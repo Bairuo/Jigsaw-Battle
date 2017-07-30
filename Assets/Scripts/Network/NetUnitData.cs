@@ -5,6 +5,23 @@ public class NetUnitData{
     //对于玩家来说id是玩家在房间内的id
     //对于其它物体来说id是创建端的InstanceID
     string id;
+    public Vector3 fpos;
+    Vector3 lpos;
+    float lastRecvTime = float.MinValue;
+    public float delta = 1;
+
+    public void Update(Vector3 npos)
+    {
+        fpos = lpos + (npos - lpos) * 2;
+        if (Time.time - lastRecvTime > 0.3f)
+        {
+            fpos = npos;
+        }
+        delta = Time.time - lastRecvTime;
+
+        lpos = npos;
+        lastRecvTime = Time.time;
+    }
 
     public NetUnitData(string _id, GameObject obj)
     {
@@ -12,6 +29,8 @@ public class NetUnitData{
         float x = obj.gameObject.transform.position.x;
         float y = obj.gameObject.transform.position.y;
         float z = obj.gameObject.transform.position.z;
+
+        fpos = lpos = new Vector3(x, y, z);
 
         if (obj.tag != "Player")
         {

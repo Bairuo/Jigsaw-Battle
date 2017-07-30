@@ -292,10 +292,11 @@ public class Client
         Send(protocol);
     }
 
-    public void SendBlockGenerate(float x, float y, int ID)
+    public void SendBlockGenerate(string net_id, float x, float y, int ID)
     {
         ProtocolBytes protocol = new ProtocolBytes();
         protocol.AddString("BlockGenerate");
+        protocol.AddString(net_id);
         protocol.AddFloat(x);
         protocol.AddFloat(y);
         protocol.AddInt(ID);

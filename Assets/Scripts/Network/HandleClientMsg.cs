@@ -63,11 +63,12 @@ public class HandleClientMsg{
         ProtocolBytes proto = (ProtocolBytes)protoBase;
         int start = 0;
         string name = proto.GetString(start, ref start);
+        string net_id = proto.GetString(start, ref start);
         float x = proto.Getfloat(start, ref start);
         float y = proto.Getfloat(start, ref start);
         int ID = proto.GetInt(start, ref start);
 
-        BlockGenerator.instance.Generate(x, y, ID);
+        BlockGenerator.instance.Generate(net_id, x, y, ID);
     }
 
     public void PlayerTurn(ProtocolBase protoBase)

@@ -7,7 +7,11 @@ public class SceneNetController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        Client.instance.posmanager.Init(Client.instance.playerid);
+
         player.GetComponent<PlayerController>().SetPlayerID(Client.instance.playerid);
+        Client.instance.posmanager.PlayerRegister(player);
+
         Client.instance.SendPlayerInit();
 	}
 	
@@ -15,4 +19,6 @@ public class SceneNetController : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    
 }
