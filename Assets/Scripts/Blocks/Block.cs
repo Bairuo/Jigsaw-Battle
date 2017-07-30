@@ -121,17 +121,62 @@ public class Block : MonoBehaviour
     /// Changed from UPdate() to FixedUpdate()...
     void FixedUpdate()
     {
+        /// time counter. should be sync.
+        t -= Time.fixedDeltaTime;
+        
+        /// Drawing control process. Not to sync.
+        switch(state)
+        {
+            case State.Catching : // [!]Notice: This state cannot be test without player.
+            {
+                float rate = (catchingTime - t) / catchingTime;
+                CircleInterpolate(Mathf.Pow(rate, 0.65f), radius);
+                if(t < 0f) CircleInterpolate(1.0f, radius);
+            }
+            break;
+            case State.Settling : 
+            {
+                float rate = (t + settleDownTime) / (settleTime + settleDownTime);
+                CircleInterpolate(rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                if(t <= -settleDownTime) CircleInterpolate(rate * rate, 9f);
+            }
+            break;
+            case State.SettleDown : // No state transform by itself.
+            {
+                float rate = t / obstacleTime;
+                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                if(t <= 0f)
+                {
+                    CircleInterpolate(0f, 9f);
+                    foreach(var i in subs)
+                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+                }
+            }
+            break;
+            case State.Obstacle :
+            {
+                float rate = t / obstacleTime;
+                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
+                if(t <= 0f)
+                {
+                    CircleInterpolate(0f, 9f);
+                    foreach(var i in subs)
+                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
+                }
+            }
+            break;
+            default: break;
+        } // switch(state).
+        
+        /// State changing process. needs to sync.
         switch(state)
         {
             case State.Catching : // [!]Notice: This state cannot be test without player.
             {
                 t -= Time.fixedDeltaTime;
-                float rate = (catchingTime - t) / catchingTime;
-                CircleInterpolate(Mathf.Pow(rate, 0.65f), radius);
                 if(t < 0f)
                 {
                     t = 0f;
-                    CircleInterpolate(1.0f, radius);
                     state = State.Catched; // [!]automaton: To cached.
                 }
             }
@@ -139,9 +184,6 @@ public class Block : MonoBehaviour
             case State.Settling : 
             {
                 t -= Time.fixedDeltaTime;
-                float rate = (t + settleDownTime) / (settleTime + settleDownTime);
-                CircleInterpolate(rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
-                
                 if(t > 0f) // Moving the block to the correct location.
                 {
                     float settleRate = t / settleTime;
@@ -154,7 +196,6 @@ public class Block : MonoBehaviour
                     if(t <= -settleDownTime) // Block hold-on duration ended.
                     {
                         t = 0f;
-                        CircleInterpolate(rate * rate, 9f);
                         state = State.SettleDown; // [!]automaton: To SettleDown.
                     }
                 }
@@ -164,33 +205,24 @@ public class Block : MonoBehaviour
             {
                 t -= Time.fixedDeltaTime;
                 float rate = t / obstacleTime;
-                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
                 if(t <= 0f)
                 {
                     t = 0f;
-                    CircleInterpolate(0f, 9f);
-                    foreach(var i in subs)
-                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                 }
             }
             break;
             case State.Obstacle :
             {
                 t -= Time.fixedDeltaTime;
-                float rate = t / obstacleTime;
-                CircleInterpolate(rate * rate, Mathf.Sqrt(width * width * 0.25f + height * height * 0.25f));
                 if(t <= 0f)
                 {
                     t = 0f;
-                    CircleInterpolate(0f, 9f);
-                    foreach(var i in subs)
-                        i.gameObject.GetComponent<SpriteRenderer>().color = normalColor;
                     state = State.FreeToCatch; // [!]automaton: To FreeToCatch.
                 }
             }
             break;
             default: break;
-        } // swtich.
+        } // swtich(state).
     }
     
     /// Called by player when get out of this block.
