@@ -1,6 +1,29 @@
 ﻿using System;
 
 public class Sys{
+    static int maxindex = 30000;
+    static int index = 0;
+
+    public static int GetIndex()
+    {
+        if (index < maxindex)
+        {
+            index++;
+        }
+        else
+        {
+            index = 0;
+        }
+        return index;
+    }
+
+    public static bool IsOrderRight(int lastindex, int nowindex)
+    {
+        if (nowindex - lastindex > 0) return true;
+        if (nowindex - lastindex < -25000) return true;
+
+        return false;
+    }
 
     //获取时间戳
     public static long GetTimeStamp()

@@ -9,8 +9,7 @@ using System.Net.Sockets;
 public class PosManager
 {
     public GameObject prefab;
-    //PosManager只维护玩家列表，其余由GameController维护
-    //注意玩家ID和其它人物ID生成方式是不同的
+
     Dictionary<string, GameObject> players = new Dictionary<string, GameObject>();
     Dictionary<string, GameObject> blocks = new Dictionary<string, GameObject>();
 
