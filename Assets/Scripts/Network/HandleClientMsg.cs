@@ -35,6 +35,16 @@ public class HandleClientMsg{
 
         Client.instance.UDPConnect();
     }
+    public void P2P(ProtocolBase protoBase)
+    {
+        ProtocolBytes protol = (ProtocolBytes)protoBase;
+        int start = 0;
+        string protoName = protol.GetString(start, ref start);
+        string ip = protol.GetString(start, ref start);
+        int port = protol.GetInt(start, ref start);
+
+        Client.instance.AddP2Premote(ip, port);
+    }
 
     //（针对）战斗类协议
     public void LeaveBlock(ProtocolBase protoBase)

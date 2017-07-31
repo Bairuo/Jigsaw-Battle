@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Room{
     public int max = 2;
     public int num = 0;
-    int[] players = new int[4] { -1, -1, -1, -1 };
+    public int[] players = new int[4] { -1, -1, -1, -1 };
 
     public int id;
     public int Owner = -1;

@@ -115,6 +115,7 @@ public class PosManager
                 ProtocolBytes UDPunitproto = playersinfo[playerID].GetUDPUnitData(DataID, "U", playerID, players[playerID].transform.position);
 
                 Client.instance.UDPSend(UDPunitproto);
+                //Client.instance.UDPP2PBroadcast(UDPunitproto);
                 Client.instance.Send(unitproto);
             }
 
@@ -134,6 +135,7 @@ public class PosManager
                 ProtocolBytes UDPunitproto = blocksinfo[item.Key].GetUDPUnitData(DataID, "U", block.net_id, item.Value.transform.position);
 
                 Client.instance.UDPSend(UDPunitproto);
+                //Client.instance.UDPP2PBroadcast(UDPunitproto);
                 Client.instance.Send(unitproto);
             }
         }

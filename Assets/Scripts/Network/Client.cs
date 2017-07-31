@@ -54,10 +54,13 @@ public class Client
     public int conn_id = -1;
     string Host;
 
-    //超时设置
+    // 超时设置
     bool IsConnect = false;
     const int timeoutMSec = 1500;
     ManualResetEvent TimeoutObjct = new ManualResetEvent(false);
+
+    // UDP P2P
+    public List<IPEndPoint> P2Premote = new List<IPEndPoint>();
 
     public Client()
     {
@@ -93,15 +96,15 @@ public class Client
             UDPsocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
             Host = host;
-            ip = new IPEndPoint(IPAddress.Any, port - 2);
-            UDPsocket.Bind(ip);
+            //ip = new IPEndPoint(IPAddress.Any, port - 2);
+            //ip = new IPEndPoint(IPAddress.Any, port);
 
             //socket.Connect(host, port);
             IsConnect = false;
             TimeoutObjct.Reset();
 
             socket.BeginConnect(host, port, ConnectCb, socket);
-
+            
             if (TimeoutObjct.WaitOne(timeoutMSec, false))
             {
                 if (IsConnect)
@@ -120,6 +123,9 @@ public class Client
                 Close();
                 return false;
             }
+            //Debug.Log(((IPEndPoint)socket.LocalEndPoint).Port);
+            ip = new IPEndPoint(IPAddress.Any, ((IPEndPoint)socket.LocalEndPoint).Port);
+            UDPsocket.Bind(ip);
 
             isUse = true;
             ipAdress = host;
@@ -226,9 +232,24 @@ public class Client
         byte[] bytes = protocol.Encode();
         byte[] length = BitConverter.GetBytes(bytes.Length);
         byte[] sendbuff = length.Concat(bytes).ToArray();
-        IPEndPoint ip = new IPEndPoint(IPAddress.Parse(Host), 9969);
+        IPEndPoint ip = new IPEndPoint(IPAddress.Parse(Host), 9970);
         UDPsocket.SendTo(sendbuff, ip);
     }
+    public void UDPSend(ProtocolBase protocol, IPEndPoint remote)
+    {
+        byte[] bytes = protocol.Encode();
+        byte[] length = BitConverter.GetBytes(bytes.Length);
+        byte[] sendbuff = length.Concat(bytes).ToArray();
+        UDPsocket.SendTo(sendbuff, remote);
+    }
+    public void UDPP2PBroadcast(ProtocolBase protocol)
+    {
+        foreach (var item in P2Premote)
+        {
+            UDPSend(protocol, item);
+        }
+    }
+
     public void Send(ProtocolBase protocol)
     {
         byte[] bytes = protocol.Encode();
@@ -260,6 +281,17 @@ public class Client
         proto.AddInt(conn_id);
         proto.AddString("A");
         UDPSend(proto);
+    }
+    public void AddP2Premote(string ip, int port)
+    {
+        IPEndPoint t = new IPEndPoint(IPAddress.Parse(ip), port);
+        P2Premote.Add(t);
+        //Debug.Log(ip + port);
+        ProtocolBytes proto = new ProtocolBytes();
+        proto.AddString("T");
+
+        // Make a hole
+        UDPSend(proto, t);
     }
 
     //针对性协议

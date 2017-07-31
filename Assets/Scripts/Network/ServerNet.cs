@@ -123,7 +123,7 @@ public class ServerNet
         try
         {
             listenfd.Bind(ipEp);
-            UDPsocket.Bind(UDPipEp);
+            UDPsocket.Bind(ipEp);
 
             listenfd.Listen(maxConn);
 
@@ -366,6 +366,15 @@ public class ServerNet
     }
 
     //发送协议部分
+    public void SendP2P(Conn conn, string ip, int port)
+    {
+        ProtocolBytes proto = new ProtocolBytes();
+        proto.AddString("P2P");
+        proto.AddString(ip);
+        proto.AddInt(port);
+
+        Send(conn, proto);
+    }
     public void SendSuccess(Conn conn)
     {
         ProtocolBytes proto = new ProtocolBytes();
@@ -388,6 +397,27 @@ public class ServerNet
         int num = rooms[conn.roomid].num;
         proto.AddInt(num);
         rooms[conn.roomid].Broadcast(proto);
+    }
+    public void HandleP2P(Conn conn)
+    {
+        IPEndPoint t = (IPEndPoint)conn.socket.RemoteEndPoint;
+        string NewIP = t.Address.ToString();
+        int NewPort = t.Port;
+        int k = conn.roomid;
+
+        for (int i = 0; i < rooms[k].num; i++)
+        {
+            if (rooms[k].players[i] != conn.id)
+            {
+                int j = rooms[k].players[i];
+                string ip = ((IPEndPoint)conns[j].socket.RemoteEndPoint).Address.ToString();
+                int port = ((IPEndPoint)conns[j].socket.RemoteEndPoint).Port;
+
+                SendP2P(conns[j], NewIP, NewPort);
+                SendP2P(conn, ip, port);
+
+            }
+        }
     }
 
     //关闭服务器

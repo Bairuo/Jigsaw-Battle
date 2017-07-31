@@ -25,7 +25,7 @@ public class HandleServerMsg{
             {
                 ServerNet.instance.SendID(conn); //此函数目前加入一个空房间也相当于创建房间
                 ServerNet.instance.SendRoomNum(conn);
-
+                ServerNet.instance.HandleP2P(conn);
             }
         }
         catch
