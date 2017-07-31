@@ -2,9 +2,8 @@
 
 public class Sys{
     static int maxindex = 30000;
-    static int index = 0;
 
-    public static int GetIndex()
+    public static int GetIndex(ref int index)
     {
         if (index < maxindex)
         {

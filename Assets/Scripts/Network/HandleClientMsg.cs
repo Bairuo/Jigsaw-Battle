@@ -46,7 +46,6 @@ public class HandleClientMsg{
 
         Client.instance.posmanager.LeaveBlock(blockID);
     }
-
     public void PlayerInit(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;
@@ -80,10 +79,6 @@ public class HandleClientMsg{
     }
 
     public void PlayerTurn(ProtocolBase protoBase)
-    {
-        //Client.instance.posmanager.PlayerTurn(protoBase);
-    }
-    public void U(ProtocolBase protoBase)
     {
         //Client.instance.posmanager.PlayerTurn(protoBase);
     }

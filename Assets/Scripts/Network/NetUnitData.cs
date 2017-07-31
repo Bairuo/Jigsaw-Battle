@@ -9,6 +9,8 @@ public class NetUnitData{
     Vector3 lpos;
     float lastRecvTime = float.MinValue;
     public float delta = 1;
+    public int DATAindex = 0;
+    public int LastReceiveID = -1;
 
     public void Update(Vector3 npos)
     {
@@ -52,10 +54,33 @@ public class NetUnitData{
 
     }
 
-    public static ProtocolBytes GetUnitData(string protoName, string id, Vector3 pos)
+    public int GetDataID()
+    {
+        return Sys.GetIndex(ref DATAindex);
+    }
+
+    public ProtocolBytes GetUnitData(int DataID, string protoName, string id, Vector3 pos)
     {
         ProtocolBytes proto = new ProtocolBytes();
         proto.AddString(protoName);
+        proto.AddInt(DataID);
+
+        proto.AddString(id);
+
+        proto.AddFloat(pos.x);
+        proto.AddFloat(pos.y);
+        proto.AddFloat(pos.z);
+
+        return proto;
+    }
+
+    public ProtocolBytes GetUDPUnitData(int DataID, string protoName, string id, Vector3 pos)
+    {
+        ProtocolBytes proto = new ProtocolBytes();
+        proto.AddInt(Client.instance.conn_id);
+        proto.AddString(protoName);
+        proto.AddInt(DataID);
+
         proto.AddString(id);
 
         proto.AddFloat(pos.x);

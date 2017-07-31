@@ -53,7 +53,9 @@ public class PosManager
 
     public void Close()
     {
-        if (playerID != "0") Client.instance.DelListener("UpdateUnitInfo", UpdateUnitInfo);
+        Client.instance.DelListener("UpdateUnitInfo", UpdateUnitInfo);
+        Client.instance.DelListener("U", UpdateUnitInfo);
+
         players.Clear();
 
         blocks.Clear();
@@ -68,6 +70,7 @@ public class PosManager
 
         playerID = id;
         Client.instance.AddListener("UpdateUnitInfo", UpdateUnitInfo);
+        Client.instance.AddListener("U", UpdateUnitInfo);
     }
     public void StartFight() //发送初始化信息 
     {
@@ -107,8 +110,11 @@ public class PosManager
         if (players.ContainsKey(playerID)) {
             if (players[playerID].active == true)
             {
-                ProtocolBytes unitproto = NetUnitData.GetUnitData("UpdateUnitInfo", playerID, players[playerID].transform.position);
+                int DataID = playersinfo[playerID].GetDataID();
+                ProtocolBytes unitproto = playersinfo[playerID].GetUnitData(DataID, "UpdateUnitInfo", playerID, players[playerID].transform.position);
+                ProtocolBytes UDPunitproto = playersinfo[playerID].GetUDPUnitData(DataID, "U", playerID, players[playerID].transform.position);
 
+                Client.instance.UDPSend(UDPunitproto);
                 Client.instance.Send(unitproto);
             }
 
@@ -122,8 +128,12 @@ public class PosManager
                 if (netID != playerID) continue;
 
                 Block block = item.Value.GetComponent<Block>();
-                ProtocolBytes unitproto = NetUnitData.GetUnitData("UpdateUnitInfo", block.net_id, item.Value.transform.position);
 
+                int DataID = blocksinfo[item.Key].GetDataID();
+                ProtocolBytes unitproto = blocksinfo[item.Key].GetUnitData(DataID, "UpdateUnitInfo", block.net_id, item.Value.transform.position);
+                ProtocolBytes UDPunitproto = blocksinfo[item.Key].GetUDPUnitData(DataID, "U", block.net_id, item.Value.transform.position);
+
+                Client.instance.UDPSend(UDPunitproto);
                 Client.instance.Send(unitproto);
             }
         }
@@ -135,45 +145,40 @@ public class PosManager
         ProtocolBytes proto = (ProtocolBytes)protocol;
         int start = 0;
         string protoName = proto.GetString(start, ref start);
+        int DataID = proto.GetInt(start, ref start);
         string id = proto.GetString(start, ref start);
         float x = proto.Getfloat(start, ref start);
         float y = proto.Getfloat(start, ref start);
         float z = proto.Getfloat(start, ref start);
         Vector3 pos = new Vector3(x, y, z);
 
-        /*
-        if (LastReceiveTime.ContainsKey(id))
-        {
-            if (LastReceiveTime[id] != 0)
-            {
-                if (Time.time - LastReceiveTime[id] > 0.26f)
-                {
-                    return;
-                }
-                LastReceiveTime[id] = Time.time;
-            }
-            else
-            {
-                LastReceiveTime[id] = Time.time;
-            }
-        }
-        */
+        //Debug.Log(protoName + " DataID:" + DataID);
 
-        UpdateUnitInfo(id, pos);
+        UpdateUnitInfo(id, DataID, pos);
         
     }
-    public void UpdateUnitInfo(string id, Vector3 pos)
+    public void UpdateUnitInfo(string id, int DataID, Vector3 pos)
     {
         //Debug.Log(id);
         if (blocksinfo.ContainsKey(id))
         {
-            blocksinfo[id].Update(pos);
-            //Debug.Log(blocksinfo[id].fpos);
+            if (Sys.IsOrderRight(blocksinfo[id].LastReceiveID, DataID))
+            {
+                blocksinfo[id].Update(pos);
+                blocksinfo[id].LastReceiveID = DataID;
+                //Debug.Log(blocksinfo[id].fpos);
+            }
+
         }
         if (playersinfo.ContainsKey(id))
         {
-            playersinfo[id].Update(pos);
-            //Debug.Log(playersinfo[id].fpos);
+            if (Sys.IsOrderRight(playersinfo[id].LastReceiveID, DataID))
+            {
+                playersinfo[id].Update(pos);
+                playersinfo[id].LastReceiveID = DataID;
+                //Debug.Log(playersinfo[id].fpos);
+            }
+
         }
     }
 

@@ -172,10 +172,8 @@ public class ServerNet
             return;
         }
 
-
+        int DataID = protocol.GetInt(start, ref start);
         string id = protocol.GetString(start, ref start);
-        int forward = protocol.GetInt(start, ref start);
-        bool stand = protocol.GetBool(start, ref start);
 
         float x = protocol.Getfloat(start, ref start);
         float y = protocol.Getfloat(start, ref start);
@@ -183,9 +181,9 @@ public class ServerNet
 
         ProtocolBytes Recombine = new ProtocolBytes();
         Recombine.AddString(protoName);
+        Recombine.AddInt(DataID);
+
         Recombine.AddString(id);
-        Recombine.AddInt(forward);
-        Recombine.AddBool(stand);
 
         Recombine.AddFloat(x);
         Recombine.AddFloat(y);
