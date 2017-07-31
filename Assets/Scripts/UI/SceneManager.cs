@@ -20,7 +20,7 @@ public class SceneManager : MonoBehaviour {
         if (Client.instance == null) new Client();
 
         // Debug
-        //ServerNet.instance.Start("127.0.0.1", 9970);
+        ServerNet.instance.Start("127.0.0.1", 9970);
     }
 
     public void OnStartClick()
