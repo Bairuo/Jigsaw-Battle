@@ -286,7 +286,7 @@ public class Client
     {
         IPEndPoint t = new IPEndPoint(IPAddress.Parse(ip), port);
         P2Premote.Add(t);
-        //Debug.Log(ip + port);
+        Debug.Log(ip + port);
         ProtocolBytes proto = new ProtocolBytes();
         proto.AddString("T");
 

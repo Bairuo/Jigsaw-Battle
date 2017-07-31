@@ -154,7 +154,7 @@ public class PosManager
         float z = proto.Getfloat(start, ref start);
         Vector3 pos = new Vector3(x, y, z);
 
-        //Debug.Log(protoName + " DataID:" + DataID);
+        Debug.Log(protoName + " DataID:" + DataID);
 
         UpdateUnitInfo(id, DataID, pos);
         
