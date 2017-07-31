@@ -5,6 +5,7 @@ using UnityEngine;
 public class TransformController : MonoBehaviour {
     // Network
     public string controllerID = "";
+
     Rigidbody2D rb2;
     GameObject controller;
     public float speed = 0.5f;
@@ -130,6 +131,14 @@ public class TransformController : MonoBehaviour {
     }
 
     public void OnLeaveClick()
+    {
+        //Debug.Log("controller id: " + controllerID + " block id:" + controller.GetComponent<Block>().net_id);
+        if(controller.tag == "Block")
+            Client.instance.SendLeaveBlock(controller.GetComponent<Block>().net_id);
+        PlayerLeave();
+    }
+
+    public void PlayerLeave()
     {
         if (controller.tag == "Block")
         {

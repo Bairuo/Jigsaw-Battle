@@ -282,7 +282,14 @@ public class Client
             }
         }
     }*/
+    public void SendLeaveBlock(string blockID)
+    {
+        ProtocolBytes protocol = new ProtocolBytes();
+        protocol.AddString("LeaveBlock");
+        protocol.AddString(blockID);
 
+        Send(protocol);
+    }
     public void SendPlayerInit()
     {
         ProtocolBytes protocol = new ProtocolBytes();
@@ -291,7 +298,6 @@ public class Client
 
         Send(protocol);
     }
-
     public void SendBlockGenerate(string net_id, float x, float y, int ID)
     {
         ProtocolBytes protocol = new ProtocolBytes();
@@ -312,6 +318,7 @@ public class Client
 
         Send(protocol);
     }
+
 
     public void SendHit(string id, int isPlayer, int damage)
     {

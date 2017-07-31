@@ -177,6 +177,20 @@ public class PosManager
         }
     }
 
+    public void LeaveBlock(string blockID)
+    {
+        if (blocks.ContainsKey(blockID))
+        {
+            lock (blocks[blockID])
+            {
+                TransformController t = blocks[blockID].GetComponentInChildren<TransformController>();
+                if (t != null)
+                {
+                    t.PlayerLeave();
+                }
+            }
+        }
+    }
     public void Hit(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;

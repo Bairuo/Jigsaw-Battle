@@ -37,6 +37,16 @@ public class HandleClientMsg{
     }
 
     //（针对）战斗类协议
+    public void LeaveBlock(ProtocolBase protoBase)
+    {
+        ProtocolBytes proto = (ProtocolBytes)protoBase;
+        int start = 0;
+        string name = proto.GetString(start, ref start);
+        string blockID = proto.GetString(start, ref start);
+
+        Client.instance.posmanager.LeaveBlock(blockID);
+    }
+
     public void PlayerInit(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;
@@ -46,7 +56,6 @@ public class HandleClientMsg{
 
         PlayerController.PlayerInit(net_id);
     }
-
     public void AreaInit(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;
@@ -57,7 +66,6 @@ public class HandleClientMsg{
 
         TargetArea.NetAreaInit(tag, patternID);
     }
-
     public void BlockGenerate(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;
