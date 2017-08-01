@@ -33,6 +33,8 @@ public class TransformController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        this.gameObject.transform.localPosition = new Vector3(0.0f, 0.0f, -15.0f);
+        
         if (controllerID != Client.instance.playerid)
         {
             return;

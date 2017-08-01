@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 public class Block : MonoBehaviour
 {
-    // net
+    // net...
     public string net_id;
 
     // properties...
@@ -17,6 +17,7 @@ public class Block : MonoBehaviour
     public float obstacleTime = 3.0f;
     SubBlock[] subs;
     
+    Rigidbody2D rb;
     GameObject circle;
     int height;
     int width;
@@ -72,7 +73,6 @@ public class Block : MonoBehaviour
     void BuildSubBlocks()
     {
         int count = 0;
-        circle = this.gameObject.transform.GetChild(0).gameObject;
         Pattern p = Pattern.GetBlockPattern(patternID);
         height = p.height;
         width = p.width;
@@ -93,11 +93,11 @@ public class Block : MonoBehaviour
                     subs[cnt].name = "sub(" + i + "," + j + ")";
                     subs[cnt].gameObject.transform.localPosition =  Vector2.right * j - Vector2.up * i + baseloc;
                     
-                    var box = this.gameObject.AddComponent<BoxCollider2D>();
-                    box.size = new Vector2(0.86f, 0.86f);
-                    box.edgeRadius = 0.05f;
-                    box.offset = subs[cnt].gameObject.transform.localPosition;
-                    box.isTrigger = true;
+                    // var box = this.gameObject.AddComponent<BoxCollider2D>();
+                    // box.size = new Vector2(0.86f, 0.86f);
+                    // box.edgeRadius = 0.05f;
+                    // box.offset = subs[cnt].gameObject.transform.localPosition;
+                    // box.isTrigger = true;
                     
                     var rg = subs[cnt].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
                     var rc = subs[cnt].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
@@ -106,6 +106,13 @@ public class Block : MonoBehaviour
                     rd.color = normalColor;
                     rg.sortingOrder = baseCount + 2 * count - 1 - cnt; // draw stencil.
                     rc.sortingOrder = baseCount + 3 * count - cnt; // clear stencil after draw the capture circle.
+                    
+                    var box = subs[cnt].gameObject.AddComponent<BoxCollider2D>();
+                    box.size = new Vector2(0.86f, 0.86f);
+                    box.edgeRadius = 0.05f;
+                    box.offset = new Vector3(0f, 0f, 0f);
+                    //box.isTrigger = true;
+                    box.isTrigger = false;
                 }
         
         var crd = circle.GetComponent<SpriteRenderer>();
@@ -115,6 +122,8 @@ public class Block : MonoBehaviour
     
     void Start()
     {
+        circle = this.gameObject.transform.GetChild(0).gameObject;
+        rb = this.gameObject.GetComponent<Rigidbody2D>();
         BuildSubBlocks();
     }
     
@@ -181,6 +190,7 @@ public class Block : MonoBehaviour
                 {
                     t = 0f;
                     state = State.Catched; // [!]automaton: To cached.
+                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                 }
             }
             break;
@@ -196,6 +206,7 @@ public class Block : MonoBehaviour
                 else // Blcok is now placed correctly. Hold on a delay preventing mis-take this block.
                 {
                     this.gameObject.transform.position = settleTo;
+                    rb.constraints = RigidbodyConstraints2D.FreezePosition | RigidbodyConstraints2D.FreezeRotation;
                     if(t <= -settleDownTime) // Block hold-on duration ended.
                     {
                         t = 0f;
