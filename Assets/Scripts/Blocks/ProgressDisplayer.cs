@@ -24,7 +24,7 @@ public class ProgressDisplayer : MonoBehaviour
         {
             //Debug.Log("init");
             target = Camp.GetTarget(playerID);
-            if (target != null && target.grids != null)
+            if (target != null && target.grids != null && playerID != 0)
             {
                 target = Camp.GetTarget(playerID);
                 subs = new Image[target.width, target.height];

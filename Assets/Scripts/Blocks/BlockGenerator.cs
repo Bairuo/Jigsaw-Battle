@@ -30,7 +30,8 @@ public class BlockGenerator : MonoBehaviour
     public int maxAttempt = 64; // max attempt allowed when using Generate-one Mode.
     
     public float distance; // Will not deploy any block if a block has a distance to target point smaller than this.
-
+    public float targetDistance; // Will not deploy any block if too close to the center of target area.
+    
     public static BlockGenerator instance;
 
     public BlockGenerator()
@@ -108,11 +109,12 @@ public class BlockGenerator : MonoBehaviour
     
     bool CanGenerate(Vector2 loc)
     {
-        // TODO: Use collider to avoid generating near blocks.
         foreach(var i in GameObject.FindGameObjectsWithTag("Block"))
             if(Vector2.Distance(loc, i.transform.position) < distance) return false;
         foreach(var i in GameObject.FindGameObjectsWithTag("Player"))
             if(Vector2.Distance(loc, i.transform.position) < distance) return false;
+        foreach(var i in Camp.campTarget)
+            if(i != null && Vector2.Distance(loc, i.gameObject.transform.position) < targetDistance) return false;
         return true;
     }
     

@@ -108,10 +108,6 @@ public class TargetArea : MonoBehaviour
     
     void Update()
     {
-        if (Client.instance.playerid != "0") return;
-        
-        AreaInit();
-        
         int cnt = 0;
         int crr = 0;
         for(int i=0; i<height; i++)
@@ -122,7 +118,13 @@ public class TargetArea : MonoBehaviour
                     if(grids[i,j].established)
                         cnt++;
                 }
-        rateDisplay.text = (100 * (slider.value = (float)cnt / crr)).ToString("00.") + "%";
+        
+        if(crr != 0) // available count.
+            rateDisplay.text = (100 * (slider.value = (float)cnt / crr)).ToString("00.") + "%"; // <- the percent symbol looks not available...
+        
+        if (Client.instance.playerid != "0") return;
+        
+        AreaInit();
         
         if(bonusCompleted)
             SetBonus();
@@ -160,6 +162,7 @@ public class TargetArea : MonoBehaviour
     {
         fullfilled  = true;
         /// TODO!!!
+        UnityEngine.SceneManagement.SceneManager.LoadScene("win");
     }
     
     bool bonusGiven = true;
