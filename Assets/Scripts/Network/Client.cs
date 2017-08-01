@@ -286,7 +286,7 @@ public class Client
     {
         IPEndPoint t = new IPEndPoint(IPAddress.Parse(ip), port);
         P2Premote.Add(t);
-        //Debug.Log(ip + port);
+        //Debug.Log(ip + ":" + port);
         ProtocolBytes proto = new ProtocolBytes();
         proto.AddString("T");
 
@@ -314,6 +314,15 @@ public class Client
             }
         }
     }*/
+    public void SendEnterBlock(string playerID, string blockID)
+    {
+        ProtocolBytes protocol = new ProtocolBytes();
+        protocol.AddString("EnterBlock");
+        protocol.AddString(playerID);
+        protocol.AddString(blockID);
+
+        Send(protocol);
+    }
     public void SendLeaveBlock(string blockID)
     {
         ProtocolBytes protocol = new ProtocolBytes();

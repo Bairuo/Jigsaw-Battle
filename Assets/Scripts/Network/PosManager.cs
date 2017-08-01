@@ -184,6 +184,14 @@ public class PosManager
         }
     }
 
+    public void EnterBlock(string playerID, string blockID)
+    {
+        if (players.ContainsKey(playerID) && blocks.ContainsKey(blockID))
+        {
+            players[playerID].GetComponent<PlayerController>().PlayerEnter(players[playerID], blocks[blockID]);
+        }
+    }
+
     public void LeaveBlock(string blockID)
     {
         if (blocks.ContainsKey(blockID))
