@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneManager : MonoBehaviour {
+/// Duplicated name with UnityEngine.SceneManagement.SceneManager.
+public class SceneManager : MonoBehaviour
+{
     public static SceneManager instance;
 
-    public SceneManager(){
+    public SceneManager()
+    {
         instance = this;
     }
 
@@ -20,7 +23,7 @@ public class SceneManager : MonoBehaviour {
         if (Client.instance == null) new Client();
 
         // Debug
-        ServerNet.instance.Start("127.0.0.1", 9970);
+        //ServerNet.instance.Start("127.0.0.1", 9970);
     }
 
     public void OnStartClick()
@@ -35,6 +38,9 @@ public class SceneManager : MonoBehaviour {
 
     public void StartScene()
     {
-        Application.LoadLevel("dk-test");
+        /// this function is depreated.
+        //Application.LoadLevel("dk-test");
+        /// Use this instead.
+        UnityEngine.SceneManagement.SceneManager.LoadScene("dk-test");
     }
 }
