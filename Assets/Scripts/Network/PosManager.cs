@@ -116,7 +116,7 @@ public class PosManager
 
                 Client.instance.UDPSend(UDPunitproto);
                 //Client.instance.UDPP2PBroadcast(UDPunitproto);
-                Client.instance.Send(unitproto);
+                //Client.instance.Send(unitproto);
             }
 
         }
@@ -136,7 +136,7 @@ public class PosManager
 
                 Client.instance.UDPSend(UDPunitproto);
                 //Client.instance.UDPP2PBroadcast(UDPunitproto);
-                Client.instance.Send(unitproto);
+                //Client.instance.Send(unitproto);
             }
         }
     }
