@@ -145,6 +145,7 @@ public class TransformController : MonoBehaviour {
             if (controller.gameObject.GetComponent<Block>().Leave())
             {
                 PlayerCreater();
+                rb2 = controller.GetComponent<Rigidbody2D>();
                 rb2.velocity = new Vector2(0, 0);
             }
         }
