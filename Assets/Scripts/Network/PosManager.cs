@@ -154,7 +154,7 @@ public class PosManager
         float z = proto.Getfloat(start, ref start);
         Vector3 pos = new Vector3(x, y, z);
 
-        Debug.Log(protoName + " DataID:" + DataID);
+        //Debug.Log(protoName + " DataID:" + DataID);
 
         UpdateUnitInfo(id, DataID, pos);
         
@@ -181,6 +181,14 @@ public class PosManager
                 //Debug.Log(playersinfo[id].fpos);
             }
 
+        }
+    }
+
+    public void EnterBlock(string playerID, string blockID)
+    {
+        if (players.ContainsKey(playerID) && blocks.ContainsKey(blockID))
+        {
+            players[playerID].GetComponent<PlayerController>().PlayerEnter(players[playerID], blocks[blockID]);
         }
     }
 

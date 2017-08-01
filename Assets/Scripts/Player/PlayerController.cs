@@ -45,15 +45,27 @@ public class PlayerController : MonoBehaviour {
     {
         if (collision.tag == "Block")
         {
+            if (netID != Client.instance.playerid) return;
+            Client.instance.SendEnterBlock(netID, collision.gameObject.GetComponent<Block>().net_id);
+            PlayerEnter(this.gameObject, collision.gameObject);
+            /*
             if(collision.gameObject.GetComponent<Block>().Engage(new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), playerID))
             {
                 this.gameObject.GetComponentInChildren<TransformController>().TransformChanger(collision.gameObject);
                 this.gameObject.transform.SetParent(GameObject.Find("ObjectController").transform);
                 GameObject.Find("ObjectController").gameObject.GetComponent<ObjectController>().init();
-            }
+            }*/
         }
     }
 
-
+    public void PlayerEnter(GameObject player, GameObject block)
+    {
+        if (block.GetComponent<Block>().Engage(new Vector2(player.transform.position.x, player.transform.position.y), playerID))
+        {
+            player.GetComponentInChildren<TransformController>().TransformChanger(block);
+            player.transform.SetParent(GameObject.Find("ObjectController").transform);
+            GameObject.Find("ObjectController").gameObject.GetComponent<ObjectController>().init();
+        }
+    }
 
 }

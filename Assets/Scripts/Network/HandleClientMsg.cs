@@ -47,6 +47,16 @@ public class HandleClientMsg{
     }
 
     //（针对）战斗类协议
+    public void EnterBlock(ProtocolBase protoBase)
+    {
+        ProtocolBytes proto = (ProtocolBytes)protoBase;
+        int start = 0;
+        string name = proto.GetString(start, ref start);
+        string playerID = proto.GetString(start, ref start);
+        string blockID = proto.GetString(start, ref start);
+
+        Client.instance.posmanager.EnterBlock(playerID, blockID);
+    }
     public void LeaveBlock(ProtocolBase protoBase)
     {
         ProtocolBytes proto = (ProtocolBytes)protoBase;
