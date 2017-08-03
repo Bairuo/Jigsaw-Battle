@@ -59,28 +59,29 @@ public class ProgressDisplayer : MonoBehaviour
 
         //Debug.Log(subs.GetLength(0) + " " + subs.GetLength(1));
         //Debug.Log(target.grids.GetLength(0) + " " + target.grids.GetLength(1));
-
-        for(int i=0; i<target.width; i++)
-            for(int j=0; j<target.height; j++)
-            {
-                if(subs[i,j] && target.grids[i,j])
+        
+        if(inited)
+            for(int i=0; i<target.width; i++)
+                for(int j=0; j<target.height; j++)
                 {
-                    if(target.grids[i,j].established)
+                    if(subs[i,j] && target.grids[i,j])
                     {
-                        Color c = target.grids[i,j].establishedColor * Camp.GetColor(playerID);
-                        c.a = 1.0f - (1.0f - c.a) * 0.7f;
-                        subs[i,j].color = c;
-                    }
-                    else
-                    {
-                        subs[i,j].color = target.grids[i,j].disabledColor * Camp.GetColor(playerID);
-                    }
-                    
-                    if(target.grids[i,j].isBonus)
-                    {
-                        subs[i,j].color = target.grids[i,j].rd.color * 1.3f;
+                        if(target.grids[i,j].established)
+                        {
+                            Color c = target.grids[i,j].establishedColor * Camp.GetColor(playerID);
+                            c.a = 1.0f - (1.0f - c.a) * 0.7f;
+                            subs[i,j].color = c;
+                        }
+                        else
+                        {
+                            subs[i,j].color = target.grids[i,j].disabledColor * Camp.GetColor(playerID);
+                        }
+                        
+                        if(target.grids[i,j].isBonus)
+                        {
+                            subs[i,j].color = target.grids[i,j].rd.color * 1.3f;
+                        }
                     }
                 }
-            }
     }
 }

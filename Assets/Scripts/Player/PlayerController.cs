@@ -41,9 +41,11 @@ public class PlayerController : MonoBehaviour {
         transform.position = pos;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.tag == "Block")
+        if (collision.gameObject.tag == "Block")
         {
             if (netID != Client.instance.playerid) return;
             Client.instance.SendEnterBlock(netID, collision.gameObject.GetComponent<Block>().net_id);
@@ -57,7 +59,7 @@ public class PlayerController : MonoBehaviour {
             }*/
         }
     }
-
+    
     public void PlayerEnter(GameObject player, GameObject block)
     {
         if (block.GetComponent<Block>().Engage(new Vector2(player.transform.position.x, player.transform.position.y), playerID))

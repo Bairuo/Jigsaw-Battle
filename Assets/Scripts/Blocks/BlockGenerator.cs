@@ -47,7 +47,6 @@ public class BlockGenerator : MonoBehaviour
     float t = 0f;
     void FixedUpdate()
     {
-        
         Client.instance.Update();
         if (Client.instance.playerid != "0") return;
         
