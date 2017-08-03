@@ -137,6 +137,8 @@ public class PosManager
                 Client.instance.UDPSend(UDPunitproto);
                 //Client.instance.UDPP2PBroadcast(UDPunitproto);
                 //Client.instance.Send(unitproto);
+
+                //Debug.Log(1);
             }
         }
     }
@@ -269,7 +271,7 @@ public class PosManager
             {
                 string netID = item.Value.GetComponentInChildren<TransformController>().controllerID;
                 if (netID == playerID) continue;
-                
+                //Debug.Log(2);
                 //Debug.Log("Update" + item.Key + " " + blocksinfo[item.Key].fpos);
 
                 GameObject block = item.Value;
